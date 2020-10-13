@@ -1,4 +1,5 @@
 .idea/
+results/
 data/*.xlsx
 data/*.csv
 data/*.npy
