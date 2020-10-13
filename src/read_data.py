@@ -20,7 +20,7 @@ def get_spider_data():
     return data
 
 
-def create_matrix(data):
+def create_matrix(data):  # TODO
     """
     Create the matrix of the pair interactions from a dataset of interactions.
     :param data: A dataset of interactions.
@@ -29,6 +29,6 @@ def create_matrix(data):
     X = []
     for d1 in data.iterrows():
         for d2 in data.iterrows():
-            if d1[0] != d2[0]:
+            if d1[0] < d2[0]:
                 X.append(d1[1] + d2[1])
     return pd.DataFrame(X)

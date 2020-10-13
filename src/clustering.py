@@ -11,7 +11,7 @@ class SomClusterer:
         self.net.train(learning_rate, train_epochs)
 
     def get_clusters(self, data, plot=False):
-        return self.net.cluster(self.train_data, show=plot, printout=False)
+        return self.net.cluster(data, show=plot, printout=False, savefile=False)
 
     def save(self, filename):
         self.net.save(filename)
