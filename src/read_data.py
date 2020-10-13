@@ -20,7 +20,7 @@ def get_spider_data():
     return data
 
 
-def create_matrix(data):  # TODO
+def create_matrix(data):
     """
     Create the matrix of the pair interactions from a dataset of interactions.
     :param data: A dataset of interactions.
@@ -32,3 +32,17 @@ def create_matrix(data):  # TODO
             if d1[0] < d2[0]:
                 X.append(d1[1] + d2[1])
     return pd.DataFrame(X)
+
+def get_spider_data_sample(frac, random_state=None):
+    """
+    Load the spider dataset and take a random subset of it.
+    :param frac: Size of the sample as a fraction of the original data.
+    :param random_state: Optional seed for the sampling.
+    :return: A pandas dataframe containing a subset of the spider dataset.
+    """
+    if random_state == None:
+        data = get_spider_data().sample(frac=frac)
+    else:
+        data = get_spider_data().sample(frac=frac, random_state=random_state)
+    return data
+
