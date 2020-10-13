@@ -19,6 +19,18 @@ def get_spider_data():
     data = pd.read_csv("../data/spider_twosides_table.csv")
     return data
 
+def get_spider_data_sample(frac, random_state=None):
+    """
+    Load the spider dataset and take a random subset of it.
+    :param frac: Size of the sample as a fraction of the original data.
+    :param random_state: Optional seed for the sampling.
+    :return: A pandas dataframe containing a subset of the spider dataset.
+    """
+    if random_state == None:
+        data = get_spider_data().sample(frac=frac)
+    else:
+        data = get_spider_data().sample(frac=frac, random_state=random_state)
+    return data
 
 def create_matrix(data):
     """
