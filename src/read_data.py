@@ -33,16 +33,24 @@ def create_matrix(data):
                 X.append(d1[1] + d2[1])
     return pd.DataFrame(X)
 
-def get_spider_data_sample(frac, random_state=None):
+def get_drug_index():
+    """
+    Create a pandas dataframe with names and IDs of drug pairs corresponding to the matrix from create_matrix.
+    :return: A pandas dataframe with ID of the first drug | name of the first drug | ID of the second drug | name of the second drug.
+    """
+    names = pd.read_excel("../data/spider_twosides_table.xlsx").iloc[:, 0:2]
+    X = []
+    for i1, d1 in names.iterrows():
+        for i2, d2 in names.iterrows():
+            if i1 < i2:
+                X.append({'mol_id1': d1[0], 'name1': d1[1], 'mol_id2': d2[0], 'name2': d2[1]})
+    return pd.DataFrame(X)
+
+def get_spider_data_sample(**kwargs):
     """
     Load the spider dataset and take a random subset of it.
-    :param frac: Size of the sample as a fraction of the original data.
-    :param random_state: Optional seed for the sampling.
+    :param ...: Parameters passed to sample. Recommended: frac and random_state.
     :return: A pandas dataframe containing a subset of the spider dataset.
     """
-    if random_state == None:
-        data = get_spider_data().sample(frac=frac)
-    else:
-        data = get_spider_data().sample(frac=frac, random_state=random_state)
+    data = get_spider_data().sample(**kwargs)
     return data
-
