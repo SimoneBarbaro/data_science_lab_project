@@ -1,4 +1,4 @@
-from src.read_data import get_old_spider_data
+from src.data.read_data import get_old_spider_data
 
 
 def clean_spider_data():

@@ -1,3 +1,5 @@
+import os
+import numpy as np
 import pandas as pd
 
 
@@ -7,7 +9,7 @@ def get_old_spider_data():
     Load the spider dataset as it is.
     :return: A pandas dataframe containing the spider dataset.
     """
-    data = pd.read_excel("../data/spider_twosides_table.xlsx").set_index(["mol_id", "alldrugs_TWOSIDES"])
+    data = pd.read_excel("../../data/spider_twosides_table.xlsx").set_index(["mol_id", "alldrugs_TWOSIDES"])
     return data
 
 
@@ -16,7 +18,7 @@ def get_spider_data():
     Load the spider dataset as it is.
     :return: A pandas dataframe containing the spider dataset.
     """
-    data = pd.read_csv("../data/spider_twosides_table.csv")
+    data = pd.read_csv("../../data/spider_twosides_table.csv")
     return data
 
 
@@ -33,18 +35,30 @@ def create_matrix(data):
                 X.append(d1[1] + d2[1])
     return pd.DataFrame(X)
 
+
+def load_sample(frac=1, random_state=1, save=False):
+    if save and os.path.exists("../../data/matrix_spider.npy"):
+        return np.load("../../data/matrix_spider_{}.npy".format(frac))
+
+    data_sample = get_spider_data_sample(frac=frac, random_state=random_state)
+    data = create_matrix(data_sample)
+    if save:
+        np.save("../../data/matrix_spider_{}.npy".format(frac), data)
+
+
 def get_drug_index():
     """
     Create a pandas dataframe with names and IDs of drug pairs corresponding to the matrix from create_matrix.
     :return: A pandas dataframe with ID of the first drug | name of the first drug | ID of the second drug | name of the second drug.
     """
-    names = pd.read_excel("../data/spider_twosides_table.xlsx").iloc[:, 0:2]
+    names = pd.read_excel("../../data/spider_twosides_table.xlsx").iloc[:, 0:2]
     X = []
     for i1, d1 in names.iterrows():
         for i2, d2 in names.iterrows():
             if i1 < i2:
                 X.append({'mol_id1': d1[0], 'name1': d1[1], 'mol_id2': d2[0], 'name2': d2[1]})
     return pd.DataFrame(X)
+
 
 def get_spider_data_sample(**kwargs):
     """
