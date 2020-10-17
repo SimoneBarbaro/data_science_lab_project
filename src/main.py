@@ -82,3 +82,41 @@ def run_kmeans_elbow():
     plt.ylabel('sum of squared distances')
     plt.title('Elbow Method For Optimal k')
     plt.show()
+    
+def run_dpgmm_tsne():
+    """
+    Runs a infinite gaussian mixture model with 5% of data
+    """
+    data_sample = get_spider_data_sample(frac=0.10, random_state=1)
+    data = create_matrix(data_sample)
+    X = data.values
+    
+    from sklearn import mixture
+    dpgmm = mixture.BayesianGaussianMixture(n_components=5,
+                                        covariance_type='full').fit(X)
+    labels = dpgmm.predict(X)
+    
+    # Dimension reduction
+    embedding = tsne_dimred(data, perplexity=40, n_jobs=4, random_state=3)
+    
+    import matplotlib.pyplot as plt
+    plt.title('Number of clusters: %d' % k)
+    plt.scatter(embedding[:, 0], embedding[:, 1], c=labels, s=5, cmap='gist_ncar')
+    
+def run_gmm_tsne(k = 8):
+    """
+    Runs a gaussian mixture model with 5% of data (this is what worked on local machine)
+    """
+    data_sample = get_spider_data_sample(frac=0.10, random_state=1)
+    data = create_matrix(data_sample)
+    
+    from sklearn.mixture import GaussianMixture
+    gmm = GaussianMixture(n_components=k,covariance_type='full').fit(data)
+    labels = gmm.predict(data)
+    
+     # Dimension reduction (see clustering.py)
+    embedding = tsne_dimred(data, perplexity=40, n_jobs=4, random_state=3)
+    
+    import matplotlib.pyplot as plt
+    plt.title('Number of clusters: %d' % k)
+    plt.scatter(embedding[:, 0], embedding[:, 1], c=labels, s=5, cmap='gist_ncar')
