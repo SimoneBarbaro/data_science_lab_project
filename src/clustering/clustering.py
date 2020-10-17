@@ -22,7 +22,8 @@ class SomClusterer(Som, Clusterer):
     Clusterer that works on
     """
     def fit(self, data):
-        self.train()
+        # self.train() SOM is trained on creation
+        return self
 
     def predict(self, data):
         self.get_som_clusters(data)
