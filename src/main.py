@@ -14,7 +14,7 @@ def run_test_embedding(embedding_fn, **embedding_args):
     data = load_sample(frac=0.1, random_state=1, save=False)
     embedding = embedding_fn(data, **embedding_args)
     plt.plot(embedding[:, 0], embedding[:, 1], '.')
-
+    plt.show()
     # Visualization with Pygal (see visualize.py)
     #visualize_pygal_scatter(embedding)
 

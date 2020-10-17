@@ -21,3 +21,4 @@ def plot_embedded_cluster(embeddings, cluster_labels, save_fig_path=None):
     plt.scatter(embeddings[:, 0], embeddings[:, 1], c=cluster_labels, s=5, cmap='gist_ncar')
     if save_fig_path is not None:
         plt.savefig(save_fig_path)
+    plt.show()
