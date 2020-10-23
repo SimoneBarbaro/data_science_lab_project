@@ -54,16 +54,30 @@ def load_sample(frac=1, random_state=1, save=False):
 
 
 def load_sample_with_names(frac=1, random_state=1, save=False):
-    if save and os.path.exists(os.path.join(dirname, f"../../data/matrix_spider_{frac}_{random_state}.pkl")) and os.path.exists(os.path.join(dirname, f"../../data/matrix_spider_names_{frac}_{random_state}.pkl")):
-        data_matrix = pd.read_pickle(os.path.join(dirname, f"../../data/matrix_spider_{frac}_{random_state}.pkl"))
-        matrix_names = pd.read_pickle(os.path.join(dirname, f"../../data/matrix_spider_names_{frac}_{random_state}.pkl"))
+    if save and os.path.exists(os.path.join(dirname, f"../../data/matrix_spider_{frac}_{random_state}.pkl.gz")) and os.path.exists(os.path.join(dirname, f"../../data/matrix_spider_names_{frac}_{random_state}.pkl.gz")):
+        data_matrix = pd.read_pickle(os.path.join(dirname, f"../../data/matrix_spider_{frac}_{random_state}.pkl.gz"))
+        matrix_names = pd.read_pickle(os.path.join(dirname, f"../../data/matrix_spider_names_{frac}_{random_state}.pkl.gz"))
     else:
         data_sample_name = get_spider_data_with_names().sample(frac=frac, random_state=random_state)
         data_matrix = create_matrix(data_sample_name)
         matrix_names = get_drug_names(data_sample_name)
         if save:
-            data.to_pickle(os.path.join(dirname, f"../../data/matrix_spider_names_{frac}_{random_state}.pkl"), data)
+            data_matrix.to_pickle(os.path.join(dirname, f"../../data/matrix_spider_{frac}_{random_state}.pkl.gz"))
+            matrix_names.to_pickle(os.path.join(dirname, f"../../data/matrix_spider_names_{frac}_{random_state}.pkl.gz"))
     return data_matrix, matrix_names
+
+
+def load_full_matrix_with_names():
+    if os.path.exists(os.path.join(dirname, "../../data/matrix_spider_full.pkl.gz")) and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_names_full.pkl.gz")):
+        data_full = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_full.pkl.gz"))
+        names_full = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_names_full.pkl.gz"))
+    else:
+        data_simple = get_spider_data_with_names()
+        data_full = create_matrix(data_simple)
+        names_full = get_drug_names(data_simple)
+        data_full.to_pickle(os.path.join(dirname, "../../data/matrix_spider_full.pkl.gz"))
+        names_full.to_pickle(os.path.join(dirname, "../../data/matrix_spider_names_full.pkl.gz"))
+    return data_full, names_full
 
 
 def get_drug_names(data):
