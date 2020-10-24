@@ -43,27 +43,27 @@ def create_matrix(data):
 
 
 def load_sample(frac=1, random_state=1, save=False):
-    if save and os.path.exists(os.path.join(dirname, f"../../data/matrix_spider_{frac}_{random_state}.npy")):
-        return np.load(os.path.join(dirname, f"../../data/matrix_spider_{frac}_{random_state}.npy"))
+    if save and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_{}_{}.npy".format(frac, random_state))):
+        return np.load(os.path.join(dirname, "../../data/matrix_spider_{}_{}.npy".format(frac, random_state)))
 
     data_sample = get_spider_data_sample(frac=frac, random_state=random_state)
     data = create_matrix(data_sample).values
     if save:
-        np.save(os.path.join(dirname, f"../../data/matrix_spider_{frac}_{random_state}.npy"), data)
+        np.save(os.path.join(dirname, "../../data/matrix_spider_{}_{}.npy".format(frac, random_state)), data)
     return data
 
 
 def load_sample_with_names(frac=1, random_state=1, save=False):
-    if save and os.path.exists(os.path.join(dirname, f"../../data/matrix_spider_{frac}_{random_state}.pkl.gz")) and os.path.exists(os.path.join(dirname, f"../../data/matrix_spider_names_{frac}_{random_state}.pkl.gz")):
-        data_matrix = pd.read_pickle(os.path.join(dirname, f"../../data/matrix_spider_{frac}_{random_state}.pkl.gz"))
-        matrix_names = pd.read_pickle(os.path.join(dirname, f"../../data/matrix_spider_names_{frac}_{random_state}.pkl.gz"))
+    if save and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state))) and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state))):
+        data_matrix = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
+        matrix_names = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
     else:
         data_sample_name = get_spider_data_with_names().sample(frac=frac, random_state=random_state)
         data_matrix = create_matrix(data_sample_name)
         matrix_names = get_drug_names(data_sample_name)
         if save:
-            data_matrix.to_pickle(os.path.join(dirname, f"../../data/matrix_spider_{frac}_{random_state}.pkl.gz"))
-            matrix_names.to_pickle(os.path.join(dirname, f"../../data/matrix_spider_names_{frac}_{random_state}.pkl.gz"))
+            data_matrix.to_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
+            matrix_names.to_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
     return data_matrix, matrix_names
 
 
