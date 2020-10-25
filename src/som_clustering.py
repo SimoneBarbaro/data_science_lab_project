@@ -15,4 +15,4 @@ clusterer = SomClusterer(raw_data, size=20)
 
 clusters = clusterer.get_som_clusters(raw_data, True)
 print(clusters)
-plot_embedded_cluster(clusterer.get_embeddings(raw_data), clusterer.get_cluster_labels(clusters))
+plot_embedded_cluster(clusterer.embed(raw_data), clusterer.get_cluster_labels(clusters))

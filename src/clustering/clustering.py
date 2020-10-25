@@ -1,4 +1,6 @@
 import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
 
 from src.dimensionality_reduction.som import Som
 
@@ -41,3 +43,16 @@ class SomClusterer(Som, Clusterer):
             for i in clust:
                 labels[i] = c
         return labels
+
+
+def get_clusterer(name, **kwargs):
+    if name == "som_cluster":
+        return SomClusterer(**kwargs)
+    elif name == "kmeans":
+        return KMeans(**kwargs)
+    elif name == "gmm":
+        return GaussianMixture(**kwargs)
+    elif name == "dpgmm":
+        return BayesianGaussianMixture(**kwargs)
+    else:
+        raise NotImplementedError("Clusterer requested not implemented")
