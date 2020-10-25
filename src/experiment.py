@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 
 from src.visualize.visualize import plot_embedded_cluster
 from src.data.read_data import filter_twosides, get_twosides_meddra
@@ -18,19 +19,23 @@ class Experiment:
         data = self.data
 
         if self.pre_filter:
-            data, names = filter_twosides(self.data, self.names, get_twosides_meddra())
+            data, names = filter_twosides(self.data, self.names, get_twosides_meddra(False))
         if self.pre_embedd:
-            data = self.embedder.embed(self.data)
+            data = self.embedder.embed(data)
 
         self.clusterer.fit(data)
 
         if not self.pre_filter:
-            data, names = filter_twosides(self.data, self.names, get_twosides_meddra())
+            data, names = filter_twosides(self.data, self.names, get_twosides_meddra(False))
 
         labels = self.clusterer.predict(data)
 
         if not self.pre_embedd:
-            data = self.embedder.embed(self.data)
+            data = self.embedder.embed(data)
 
-        print(labels)
+        results = pd.DataFrame(labels, columns=["cluster"])
+        results = pd.concat([names.reset_index(drop=True), results.reset_index(drop=True)], axis=1)
+        print(results)
+        results.to_csv(os.path.join(self.run_path, "results.csv"), index=False, header=True)
+        os.makedirs(self.run_path, exist_ok=True)
         plot_embedded_cluster(data, labels, save_fig_path=os.path.join(self.run_path, "embedded_clusters.png"))

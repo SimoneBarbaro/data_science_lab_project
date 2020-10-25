@@ -2,7 +2,7 @@ from src.clustering.clustering import SomClusterer, get_clusterer
 from src.data.read_data import *
 from src.dimensionality_reduction.embedding import get_embedder
 from src.dimensionality_reduction.tsne import tsne_dimred
-from src.dimensionality_reduction.umap import umap_dimred
+#from src.dimensionality_reduction.umap import umap_dimred
 from src.experiment import Experiment
 from src.visualize.visualize import plot_embedded_cluster
 from src.dimensionality_reduction.som import som_embedd
@@ -113,23 +113,28 @@ if __name__ == "__main__":
     parser.add_argument('--embedding', type=str, choices=["tsne", "umap", "som"],
                         help='Choose an embedding method', default="tsne")
     parser.add_argument('--embedding_config', type=str,
-                        help='Choose a embedding configuration file', default="../config/kmeans_default.json")
+                        help='Choose a embedding configuration file', default="../config/tsne_default.json")
     parser.add_argument('--random_seed', type=int, default=42, help="global seed for random functions")
-    parser.add_argument('--test', help="add if you want to test the run on a smaller amount of data")
-    parser.add_argument('--pre_embed', help="add if you want to do the embedding before clustering")
-    parser.add_argument('--pre_filter', help="add to filter results before clustering based on twosides")
-    parser.add_argument('run_name', type=str, default="test",
+    parser.add_argument('--test', action='store_true', default=False,
+                        help="add if you want to test the run on a smaller amount of data")
+    parser.add_argument('--pre_embed', action='store_true', default=False,
+                        help="add if you want to do the embedding before clustering")
+    parser.add_argument('--pre_filter', action='store_true', default=False,
+                        help="add to filter results before clustering based on twosides")
+    parser.add_argument('--run_name', type=str, default="test",
                         help="name of the run, a folder with that name will be created in results to store all the "
                              "relevant results of the run")
 
     args = parser.parse_args()
 
     frac = 0.1 if args.test else 1
-    print(frac)
+
     data, names = load_sample_with_names(frac=frac, random_state=args.random_seed)
 
-    clustering_args = json.load(args.clustering_config)
-    embedding_args = json.load(args.embedding_config)
+    with open(args.clustering_config) as f:
+        clustering_args = json.load(f)
+    with open(args.embedding_config) as f:
+        embedding_args = json.load(f)
 
     if args.clustering == "som_cluster":
         clustering_args["train_data"] = data
@@ -137,7 +142,7 @@ if __name__ == "__main__":
     clusterer = get_clusterer(args.clustering, random_state=args.random_seed, **clustering_args)
     embedder = get_embedder(args.embedding, random_state=args.random_seed, **embedding_args)
 
-    experiment = Experiment(data, names, clusterer, embedder, pre_embedd=args.pre_embedd,
+    experiment = Experiment(data, names, clusterer, embedder, pre_embedd=args.pre_embed,
                             pre_filter=args.pre_filter, run_name=args.run_name)
 
     experiment.run()
