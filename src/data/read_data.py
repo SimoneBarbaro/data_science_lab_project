@@ -117,3 +117,32 @@ def get_spider_data_sample(**kwargs):
     """
     data = get_spider_data().sample(**kwargs)
     return data
+
+def get_twosides_meddra(pickle=True):
+    if pickle:
+        return pd.read_pickle(os.path.join(dirname, "../../data/TWOSIDES_medDRA.pkl.gz"))
+    else:
+        return pd.read_csv(os.path.join(dirname, "../../data/TWOSIDES_medDRA.csv.gz"))
+
+def filter_twosides(data_matrix, data_names, twosides):
+    twosides_names = twosides.filter(["drug_1_name", "drug_2_name"]).drop_duplicates()
+    
+    def concat_names(df, col1, col2):
+        return pd.concat([df[col1] + df[col2], df[col2] + df[col1]])  # Columns in either order
+
+    mask = (data_names["name1"] + data_names["name2"]).isin(concat_names(twosides_names, "drug_1_name", "drug_2_name"))
+
+    return data_matrix.loc[mask], data_names.loc[mask]
+
+def match_meddra(filtered_names, twosides):  
+    def concat_names(df, col1, col2):
+        return pd.concat([df[col1] + df[col2]])
+    
+    mask12 = (twosides["drug_1_name"] + twosides["drug_2_name"]).isin(concat_names(filtered_names, "name1", "name2"))
+    mask21 = (twosides["drug_1_name"] + twosides["drug_2_name"]).isin(concat_names(filtered_names, "name2", "name1"))
+    
+    res = twosides.copy().loc[mask12|mask21]
+    # Swap pair order to match filtered_names
+    res.loc[mask21,['drug_1_name','drug_2_name']] = res.loc[mask21,['drug_2_name','drug_1_name']].values
+    
+    return res.rename(columns={"drug_1_name":"name1", "drug_2_name":"name2"})
