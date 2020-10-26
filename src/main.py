@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import argparse
 from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
-
+from sklearn.cluster import AgglomerativeClustering
 
 def run_test_embedding(embedding_fn, **embedding_args):
     data = load_sample(frac=0.1, random_state=1, save=False)
@@ -116,6 +116,13 @@ def run_gmm_tsne(k=8):
                    tsne_dimred, perplexity=40, n_jobs=4, random_state=3)
 
 
+def run_hierarchical(k=8):
+     """
+     Runs a heirarchical clustering model with 5% of data
+     """
+    run_clustering(AgglomerativeClustering(n_components=k), tsne_dimred, perplexity=40, n_jobs=4, random_state=3)
+
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--test_embedding', type=str, choices=["none", "tsne", "umap", "som"],
