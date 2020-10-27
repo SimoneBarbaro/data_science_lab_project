@@ -54,16 +54,16 @@ def load_sample(frac=1, random_state=1, save=False):
 
 
 def load_sample_with_names(frac=1, random_state=1, save=False):
-    if save and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state))) and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state))):
+    if save and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state))) and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_names_{}_{}.pkl.gz".format(frac, random_state))):
         data_matrix = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
-        matrix_names = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
+        matrix_names = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_names_{}_{}.pkl.gz".format(frac, random_state)))
     else:
         data_sample_name = get_spider_data_with_names().sample(frac=frac, random_state=random_state)
         data_matrix = create_matrix(data_sample_name)
         matrix_names = get_drug_names(data_sample_name)
         if save:
             data_matrix.to_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
-            matrix_names.to_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
+            matrix_names.to_pickle(os.path.join(dirname, "../../data/matrix_spider_names_{}_{}.pkl.gz".format(frac, random_state)))
     return data_matrix, matrix_names
 
 
