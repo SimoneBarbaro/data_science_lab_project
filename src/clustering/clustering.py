@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, DBSCAN
 from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
 
 from src.dimensionality_reduction.som import Som
@@ -12,20 +12,29 @@ class Clusterer:
     labels_ = None
 
     def fit_impl(self, data):
+        """
+        Implementation of the fit function.
+        :param data: data
+        """
         raise NotImplementedError
 
     def fit(self, data):
+        """
+        Wrapper to the fit function because of compatibility with sklearn fluent interface.
+        :param data: data
+        :return: self
+        """
         self.fit_impl(data)
         return self
 
 
 class SomClusterer(Som, Clusterer):
     """
-    Clusterer that works on
+    Clusterer that works on Som.
     """
-    def fit(self, data):
+    def fit_impl(self, data):
         # self.train() SOM is trained on creation
-        return self
+        pass
 
     def predict(self, data):
         self.get_som_clusters(data)
@@ -46,6 +55,12 @@ class SomClusterer(Som, Clusterer):
 
 
 def get_clusterer(name, **kwargs):
+    """
+    Return an clusterer given the name.
+    :param name: The clusterer name.
+    :param kwargs: Arguments to be passed to the clusterer.
+    :return: A clusterer.
+    """
     if name == "som_cluster":
         return SomClusterer(**kwargs)
     elif name == "kmeans":
@@ -54,5 +69,7 @@ def get_clusterer(name, **kwargs):
         return GaussianMixture(**kwargs)
     elif name == "dpgmm":
         return BayesianGaussianMixture(**kwargs)
+    elif name == "dbscan":
+        return DBSCAN(**kwargs)
     else:
         raise NotImplementedError("Clusterer requested not implemented")

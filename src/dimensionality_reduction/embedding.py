@@ -4,6 +4,12 @@ from src.dimensionality_reduction.tsne import TsneEmbedder
 
 
 def get_embedder(name, **kwargs):
+    """
+    Return an embedder given the name.
+    :param name: The embedder name.
+    :param kwargs: Arguments to be passed to the embedder.
+    :return: An embedder.
+    """
     if name == "tsne":
         return TsneEmbedder(**kwargs)
     elif name == "umap":

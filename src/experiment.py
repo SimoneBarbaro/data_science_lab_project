@@ -6,7 +6,21 @@ from src.data.read_data import filter_twosides, get_twosides_meddra
 
 
 class Experiment:
+    """
+    Main class to run a clustering experiment. It is generic
+    and should be able to run with any clustering and any dimensionality reduction embedding method.
+    """
     def __init__(self, data, names, clusterer, embedder, pre_embedd=False, pre_filter=False, run_name="test"):
+        """
+        Create a new experiment.
+        :param data: The data to run the experiment.
+        :param names: The dataframe with the names of the pairs related to the data
+        :param clusterer: A clusterer object, able to implement an unsupervised fit and predict clustering.
+        :param embedder: An embedder object, able to embed data into a two dimensional space.
+        :param pre_embedd: Whether to embed the data before clustering or after.
+        :param pre_filter: whether to filter the data based on the twosides dataset before or after clustering and embedding.
+        :param run_name: The name of the run corresponding to the folder in results where results will be stored.
+        """
         self.data = data
         self.names = names
         self.clusterer = clusterer
@@ -16,6 +30,10 @@ class Experiment:
         self.run_path = os.path.join("../results", run_name)
 
     def run(self):
+        """
+        Run the experiment. All the results should be either printed or saved into the subfolder of results
+        specified at initialization of the class.
+        """
         data = self.data
 
         if self.pre_filter:
