@@ -181,5 +181,9 @@ def match_meddra(filtered_names, twosides):
     res = twosides.copy().loc[mask12|mask21]
     # Swap pair order to match filtered_names
     res.loc[mask21,['drug_1_name','drug_2_name']] = res.loc[mask21,['drug_2_name','drug_1_name']].values
+    res.rename(columns={"drug_1_name":"name1", "drug_2_name":"name2"}, inplace=True)
     
-    return res.rename(columns={"drug_1_name":"name1", "drug_2_name":"name2"})
+    if len(filtered_names.columns) > 2:
+        res = res.merge(filtered_names, on=["name1", "name2"])
+    
+    return res
