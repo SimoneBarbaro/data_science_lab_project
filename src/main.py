@@ -116,7 +116,7 @@ def run_gmm_tsne(k=8):
                    tsne_dimred, perplexity=40, n_jobs=4, random_state=3)
 
 
-def run_hierarchical(k=8):
+def run_hierarchical_tsne(k=8):
      """
      Runs a heirarchical clustering model with 5% of data
      """
@@ -151,3 +151,5 @@ if __name__ == "__main__":
         run_dpgmm_tsne()
     elif args.test_clustering == "gmm_tsne":
         run_gmm_tsne()
+    elif args.test_clustering == "hierarchical_tsne":
+        run_hierarchical_tsne()
