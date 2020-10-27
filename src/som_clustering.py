@@ -1,9 +1,9 @@
 import os
 import numpy as np
 
-from src.data.read_data import create_matrix, get_spider_data
-from src.clustering.clustering import SomClusterer
-from src.visualize.visualize import plot_embedded_cluster
+from data.read_data import create_matrix, get_spider_data
+from clustering.clustering import SomClusterer
+from visualize.visualize import plot_embedded_cluster
 
 if not os.path.exists("../data/matrix_spider.npy"):
     raw_data = create_matrix(get_spider_data().head(10)).values

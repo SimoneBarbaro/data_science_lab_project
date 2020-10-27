@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
 
-from src.dimensionality_reduction.som import Som
+from dimensionality_reduction.som import Som
 
 
 class Clusterer:

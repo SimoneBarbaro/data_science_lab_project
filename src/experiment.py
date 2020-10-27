@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 
-from src.visualize.visualize import plot_embedded_cluster
-from src.data.read_data import filter_twosides, get_twosides_meddra
+from visualize.visualize import plot_embedded_cluster
+from data.read_data import filter_twosides, get_twosides_meddra
 
 
 class Experiment:
@@ -54,6 +54,6 @@ class Experiment:
         results = pd.DataFrame(labels, columns=["cluster"])
         results = pd.concat([names.reset_index(drop=True), results.reset_index(drop=True)], axis=1)
         print(results)
-        results.to_csv(os.path.join(self.run_path, "results.csv"), index=False, header=True)
         os.makedirs(self.run_path, exist_ok=True)
+        results.to_csv(os.path.join(self.run_path, "results.csv"), index=False, header=True)
         plot_embedded_cluster(data, labels, save_fig_path=os.path.join(self.run_path, "embedded_clusters.png"))

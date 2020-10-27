@@ -1,7 +1,7 @@
-from src.clustering.clustering import get_clusterer
-from src.data.read_data import *
-from src.dimensionality_reduction.embedding import get_embedder
-from src.experiment import Experiment
+from clustering.clustering import get_clusterer
+from data.read_data import *
+from dimensionality_reduction.embedding import get_embedder
+from experiment import Experiment
 
 import argparse
 import json
