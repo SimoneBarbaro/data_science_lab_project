@@ -2,9 +2,11 @@ import SimpSOM as sps
 import numpy as np
 import os
 
+from dimensionality_reduction.embedder import Embedder
 
-class Som:
-    def __init__(self, train_data, size=20, filepath="../results/som.npy"):
+
+class Som(Embedder):
+    def __init__(self, train_data, size=20, filepath="../results/som.npy", **kwargs):
         self.train_data = train_data
         self.size = size
         self.net = sps.somNet(self.size, self.size, self.train_data, PBC=True)
@@ -24,10 +26,10 @@ class Som:
     def load(self, filename):
         self.net = sps.somNet(self.size, self.size, self.train_data, PBC=True, loadFile=filename)
 
-    def get_embeddings(self, data):
+    def embed(self, data):
         return np.array(self.net.project(data, show=False, printout=False))
 
 
 def som_embedd(data):
     som = Som(data)
-    return som.get_embeddings(data)
+    return som.embed(data)

@@ -1,6 +1,8 @@
 import numpy as np
+from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
+from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
 
-from src.dimensionality_reduction.som import Som
+from dimensionality_reduction.som import Som
 
 
 class Clusterer:
@@ -10,20 +12,29 @@ class Clusterer:
     labels_ = None
 
     def fit_impl(self, data):
+        """
+        Implementation of the fit function.
+        :param data: data
+        """
         raise NotImplementedError
 
     def fit(self, data):
+        """
+        Wrapper to the fit function because of compatibility with sklearn fluent interface.
+        :param data: data
+        :return: self
+        """
         self.fit_impl(data)
         return self
 
 
 class SomClusterer(Som, Clusterer):
     """
-    Clusterer that works on
+    Clusterer that works on Som.
     """
-    def fit(self, data):
+    def fit_impl(self, data):
         # self.train() SOM is trained on creation
-        return self
+        pass
 
     def predict(self, data):
         self.get_som_clusters(data)
@@ -41,3 +52,37 @@ class SomClusterer(Som, Clusterer):
             for i in clust:
                 labels[i] = c
         return labels
+
+
+class AgglomerativeClusterer(AgglomerativeClustering, Clusterer):
+    """
+    Wrapper for AgglomerativeClustering because for some strange reason they forgot to put a predict method in it!
+    """
+    def fit_impl(self, data):
+        super(AgglomerativeClusterer, self).fit(data)
+
+    def predit(self, data):
+        return self.fit_predict(data)
+
+
+def get_clusterer(name, **kwargs):
+    """
+    Return an clusterer given the name.
+    :param name: The clusterer name.
+    :param kwargs: Arguments to be passed to the clusterer.
+    :return: A clusterer.
+    """
+    if name == "som_cluster":
+        return SomClusterer(**kwargs)
+    elif name == "kmeans":
+        return KMeans(**kwargs)
+    elif name == "gmm":
+        return GaussianMixture(**kwargs)
+    elif name == "dpgmm":
+        return BayesianGaussianMixture(**kwargs)
+    elif name == "dbscan":
+        return DBSCAN(**kwargs)
+    elif name == "aggl":
+        return AgglomerativeClustering(**kwargs)
+    else:
+        raise NotImplementedError("Clusterer requested not implemented")

@@ -54,20 +54,35 @@ def load_sample(frac=1, random_state=1, save=False):
 
 
 def load_sample_with_names(frac=1, random_state=1, save=False):
-    if save and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state))) and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state))):
+    """
+    Load a fraction of the data with corresponding drug pair names.
+    :param frac: fraction of data from the original Excel file
+    :param random_state: seed
+    :param save: whether to save (and subsequently load) the output dataframes as compressed pickles (specified by frac and random_state) in the data folder
+    :return:
+        - data_matrix: dataframe matrix of interactions (from create_matrix)
+        - matrix_names: two-column dataframe with the names of drug pairs corresponding to the rows of the matrix
+    """
+    if save and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state))) and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_names_{}_{}.pkl.gz".format(frac, random_state))):
         data_matrix = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
-        matrix_names = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
+        matrix_names = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_names_{}_{}.pkl.gz".format(frac, random_state)))
     else:
         data_sample_name = get_spider_data_with_names().sample(frac=frac, random_state=random_state)
         data_matrix = create_matrix(data_sample_name)
         matrix_names = get_drug_names(data_sample_name)
         if save:
             data_matrix.to_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
-            matrix_names.to_pickle(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
+            matrix_names.to_pickle(os.path.join(dirname, "../../data/matrix_spider_names_{}_{}.pkl.gz".format(frac, random_state)))
     return data_matrix, matrix_names
 
 
 def load_full_matrix_with_names():
+    """
+    Load the full data matrix with corresponding drug pair names.
+    :return:
+        - data_full: dataframe matrix of interactions (from create_matrix)
+        - names_full: two-column dataframe with the names of drug pairs corresponding to the rows of the matrix
+    """
     if os.path.exists(os.path.join(dirname, "../../data/matrix_spider_full.pkl.gz")) and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_names_full.pkl.gz")):
         data_full = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_full.pkl.gz"))
         names_full = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_names_full.pkl.gz"))
@@ -119,12 +134,26 @@ def get_spider_data_sample(**kwargs):
     return data
 
 def get_twosides_meddra(pickle=True):
+    """
+    Load the the TWOSIDES database with medDRA descriptions.
+    :param pickle: whether to read data/TWOSIDES_medDRA.pkl.gz (smaller, faster) instead of data/TWOSIDES_medDRA.csv.gz
+    :return: the TWOSIDES database with SPiDER drug pairs and side effect classifications according to medDRA
+    """
     if pickle:
         return pd.read_pickle(os.path.join(dirname, "../../data/TWOSIDES_medDRA.pkl.gz"))
     else:
         return pd.read_csv(os.path.join(dirname, "../../data/TWOSIDES_medDRA.csv.gz"))
 
 def filter_twosides(data_matrix, data_names, twosides):
+    """
+    From data_matrix and data_names, filter the pairs that are present in the TWOSIDES database. 
+    :param data_matrix: dataframe matrix of interactions (from create_matrix)
+    :param data_names: two-column dataframe with the names of drug pairs corresponding to the rows of the matrix
+    :param twosides: the TWOSIDES database with columns drug_1_name and drug_2_name representing the drug pairs (as read by get_twosides_meddra)
+    :return:
+        - data_matrix_ts: dataframe matrix of only the interactions where the pair is present in TWOSIDES
+        - data_names_ts: two-column dataframe of names of drug pairs present in TWOSIDES
+    """
     twosides_names = twosides.filter(["drug_1_name", "drug_2_name"]).drop_duplicates()
     
     def concat_names(df, col1, col2):
@@ -134,7 +163,15 @@ def filter_twosides(data_matrix, data_names, twosides):
 
     return data_matrix.loc[mask], data_names.loc[mask]
 
-def match_meddra(filtered_names, twosides):  
+def match_meddra(filtered_names, twosides):
+    """
+    Match the given drug pairs with their medDRA side effect descriptions.
+    :param filtered_names: two-column dataframe of names of drug pairs present in TWOSIDES
+    :param twosides: the TWOSIDES database with columns drug_1_name and drug_2_name representing the drug pairs (as read by get_twosides_meddra)
+    Output
+
+    :return: dataframe with the medDRA classifications of side effects for the drug pairs given in data_names_ts
+    """
     def concat_names(df, col1, col2):
         return pd.concat([df[col1] + df[col2]])
     
