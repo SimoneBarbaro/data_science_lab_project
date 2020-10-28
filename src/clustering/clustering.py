@@ -83,6 +83,6 @@ def get_clusterer(name, **kwargs):
     elif name == "dbscan":
         return DBSCAN(**kwargs)
     elif name == "aggl":
-        return AgglomerativeClustering(**kwargs)
+        return AgglomerativeClusterer(**kwargs)
     else:
         raise NotImplementedError("Clusterer requested not implemented")
