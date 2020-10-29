@@ -3,6 +3,7 @@ import pandas as pd
 
 from visualize.visualize import plot_embedded_cluster
 from data.read_data import filter_twosides, get_twosides_meddra
+from result_analysis import ResultAnalyzer
 
 
 class Experiment:
@@ -10,7 +11,8 @@ class Experiment:
     Main class to run a clustering experiment. It is generic
     and should be able to run with any clustering and any dimensionality reduction embedding method.
     """
-    def __init__(self, data, names, clusterer, embedder, pre_embedd=False, pre_filter=False, run_name="test"):
+    def __init__(self, data, names, clusterer, embedder,
+                 pre_embedd=False, pre_filter=False, run_name="test", analyze=True):
         """
         Create a new experiment.
         :param data: The data to run the experiment.
@@ -20,6 +22,7 @@ class Experiment:
         :param pre_embedd: Whether to embed the data before clustering or after.
         :param pre_filter: whether to filter the data based on the twosides dataset before or after clustering and embedding.
         :param run_name: The name of the run corresponding to the folder in results where results will be stored.
+        :param analyze: Whether to analyze the run.
         """
         self.data = data
         self.names = names
@@ -28,6 +31,7 @@ class Experiment:
         self.pre_embedd = pre_embedd
         self.pre_filter = pre_filter
         self.run_path = os.path.join("../results", run_name)
+        self.analyze = analyze
 
     def run(self):
         """
@@ -58,3 +62,6 @@ class Experiment:
             data = self.embedder.embed(data)
 
         plot_embedded_cluster(data, labels, save_fig_path=os.path.join(self.run_path, "embedded_clusters.png"))
+
+        if self.analyze:
+            ResultAnalyzer(self.run_path, os.path.join(self.run_path, "results.csv")).analyze()
