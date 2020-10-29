@@ -22,7 +22,7 @@ class ResultAnalyzer:
         self.results_file = results_file
         os.makedirs(self.analysis_dir, exist_ok=True)
 
-    def analyze(self):
+    def analyze(self, meddra_term="soc_term"):
         """
         Analyze the results and save the files in a subfolder in the run directory.
         """
@@ -30,7 +30,7 @@ class ResultAnalyzer:
         kmeans_results = pd.read_csv(self.results_file)
         kmeans_meddra = match_meddra(kmeans_results, twosides)
 
-        scores_series = (kmeans_meddra.groupby(["cluster", "soc_term"]).size() / kmeans_meddra.groupby(["cluster"]).size()) \
+        scores_series = (kmeans_meddra.groupby(["cluster", meddra_term]).size() / kmeans_meddra.groupby(["cluster"]).size()) \
             .sort_values(ascending=False) \
             .sort_index(level=0, sort_remaining=False) \
             .groupby("cluster")
@@ -38,7 +38,7 @@ class ResultAnalyzer:
         scores_dataframe = scores_series.head(scores_series.size().sum()).to_frame("value")
 
         tmp_df = scores_dataframe.reset_index()\
-            .pivot(index="cluster", columns="soc_term", values="value")\
+            .pivot(index="cluster", columns=meddra_term, values="value")\
             .fillna(0)
         tfidf = TfidfTransformer()
         values = tfidf.fit_transform(tmp_df).toarray()
@@ -52,4 +52,4 @@ class ResultAnalyzer:
         tfidf_dataframe = tfidf_series.to_frame("tfidf_score")
 
         final_dataframe = pd.concat([scores_dataframe, tfidf_dataframe], axis=1)
-        final_dataframe.to_csv(os.path.join(self.analysis_dir, "scores.csv"), index=True, header=True)
+        final_dataframe.to_csv(os.path.join(self.analysis_dir, "scores_{}.csv".format(meddra_term)), index=True, header=True)
