@@ -47,13 +47,14 @@ class Experiment:
             data, names = filter_twosides(self.data, self.names, get_twosides_meddra(False))
 
         labels = self.clusterer.predict(data)
-
-        if not self.pre_embedd:
-            data = self.embedder.embed(data)
-
+        
         results = pd.DataFrame(labels, columns=["cluster"])
         results = pd.concat([names.reset_index(drop=True), results.reset_index(drop=True)], axis=1)
         print(results)
         os.makedirs(self.run_path, exist_ok=True)
         results.to_csv(os.path.join(self.run_path, "results.csv"), index=False, header=True)
+
+        if not self.pre_embedd:
+            data = self.embedder.embed(data)
+
         plot_embedded_cluster(data, labels, save_fig_path=os.path.join(self.run_path, "embedded_clusters.png"))
