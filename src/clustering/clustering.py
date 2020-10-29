@@ -61,7 +61,7 @@ class AgglomerativeClusterer(AgglomerativeClustering, Clusterer):
     def fit_impl(self, data):
         super(AgglomerativeClusterer, self).fit(data)
 
-    def predit(self, data):
+    def predict(self, data):
         return self.fit_predict(data)
 
 
