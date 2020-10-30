@@ -2,7 +2,7 @@ from clustering.clustering import get_clusterer
 from data.read_data import *
 from dimensionality_reduction.embedding import get_embedder
 from experiment import Experiment
-from result_analysis import ResultAnalyzer, DummyAnalyzer
+from result_analysis import ResultAnalyzer
 
 import argparse
 import json
