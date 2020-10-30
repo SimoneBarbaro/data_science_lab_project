@@ -6,10 +6,10 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from data.read_data import get_twosides_meddra, match_meddra
 
 def intersect2D(a, b):
-      """
-      Find row intersection between 2D numpy arrays, a and b.
-      Returns another numpy array with shared rows
-      """
+    """
+    Find row intersection between 2D numpy arrays, a and b.
+    Returns another numpy array with shared rows
+    """
     return np.array([x for x in set(tuple(x) for x in a) & set(tuple(x) for x in b)])
     
 class ResultAnalyzer:
@@ -67,7 +67,7 @@ class ResultAnalyzer:
             size.append(self.results_file[self.results_file["cluster"] == i].count()["cluster"])
             assignments.append(self.results_file[self.results_file["cluster"] == i][self.results_file.columns[0:2]].values)
     
-         assignments_ordered = []
+        assignments_ordered = []
         ranks = np.argsort(size)
         for j in range(len(size)):
             assignments_ordered.append(assignments[ranks[j]])
