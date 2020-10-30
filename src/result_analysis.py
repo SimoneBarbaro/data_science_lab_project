@@ -22,15 +22,22 @@ class ResultAnalyzer:
         self.results_file = results_file
         os.makedirs(self.analysis_dir, exist_ok=True)
 
-    def analyze(self, meddra_term="soc_term"):
+    def full_analysis(self):
         """
         Analyze the results and save the files in a subfolder in the run directory.
         """
         twosides = get_twosides_meddra(pickle=False)
-        kmeans_results = pd.read_csv(self.results_file)
-        kmeans_meddra = match_meddra(kmeans_results, twosides)
+        results = pd.read_csv(self.results_file)
+        results_meddra = match_meddra(results, twosides)
 
-        scores_series = (kmeans_meddra.groupby(["cluster", meddra_term]).size() / kmeans_meddra.groupby(["cluster"]).size()) \
+        for term in ["soc_term", "hlgt_term", "hlt_term", "pt_term"]:
+            self.analyze(results_meddra, meddra_term=term)
+
+    def analyze(self, results_meddra, meddra_term="soc_term"):
+        """
+        Analyze the results for a single meddra term and save the files in a subfolder in the run directory.
+        """
+        scores_series = (results_meddra.groupby(["cluster", meddra_term]).size() / results_meddra.groupby(["cluster"]).size()) \
             .sort_values(ascending=False) \
             .sort_index(level=0, sort_remaining=False) \
             .groupby("cluster")
