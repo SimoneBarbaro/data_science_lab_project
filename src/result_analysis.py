@@ -11,6 +11,24 @@ def intersect2D(a, b):
     Returns another numpy array with shared rows
     """
     return np.array([x for x in set(tuple(x) for x in a) & set(tuple(x) for x in b)])
+
+def max_swap(a):
+    """
+    Swaps to make the diagonal maximum
+    """
+    for i in range(min(a.shape)):
+        sub = a[i:, i:]
+        maxi = np.argmax(sub)
+        ind1 = i + (maxi // (a.shape[1] - i)) % a.shape[0]
+        ind2 = (maxi % (a.shape[1])) + i
+        cpy2 = np.copy(a[:, i])
+        a[:, i] = a[:, ind2]
+        a[:, ind2] = cpy2
+        cpy1 = np.copy(a[i, :])
+        #print(cpy1, cpy2)
+        a[i, :] = a[ind1, :]
+        a[ind1, :] = cpy1
+    return a
     
 class ResultAnalyzer:
     """
@@ -91,5 +109,13 @@ class ResultAnalyzer:
     
         v1 = np.array(size)
         v2 = np.array(size2)
+        v1 = v1[ranks]
+        v2 = v2[ranks2]
+    
+        m1 = mat/v1[:, None]
+        m2 = mat/v2[None, :]
+       
+        m1 = max_swap(m1)
+        m2 = max_swap(m2)
     
         return mat/v1[:, None], mat/v2[None, :]
