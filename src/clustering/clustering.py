@@ -54,15 +54,18 @@ class SomClusterer(Som, Clusterer):
         return labels
 
 
-class AgglomerativeClusterer(AgglomerativeClustering, Clusterer):
+class SklearnPredictClusterer(Clusterer):
     """
     Wrapper for AgglomerativeClustering because for some strange reason they forgot to put a predict method in it!
     """
+    def __init__(self, original_clusterer):
+        self.clusterer = original_clusterer
+
     def fit_impl(self, data):
-        super(AgglomerativeClusterer, self).fit(data)
+        self.clusterer.fit(data)
 
     def predict(self, data):
-        return self.fit_predict(data)
+        return self.clusterer.fit_predict(data)
 
 
 def get_clusterer(name, **kwargs):
@@ -81,8 +84,8 @@ def get_clusterer(name, **kwargs):
     elif name == "dpgmm":
         return BayesianGaussianMixture(**kwargs)
     elif name == "dbscan":
-        return DBSCAN(**kwargs)
+        return SklearnPredictClusterer(DBSCAN(**kwargs))
     elif name == "aggl":
-        return AgglomerativeClusterer(**kwargs)
+        return SklearnPredictClusterer(AgglomerativeClustering(**kwargs))
     else:
         raise NotImplementedError("Clusterer requested not implemented")
