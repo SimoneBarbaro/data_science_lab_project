@@ -1,12 +1,12 @@
+from sklearn.preprocessing import StandardScaler
+import argparse
+import json
+
 from clustering.clustering import get_clusterer
 from data.read_data import *
 from dimensionality_reduction.embedding import get_embedder
 from experiment import Experiment
 from result_analysis import ResultAnalyzer
-
-import argparse
-import json
-import numpy as np
 
 if __name__ == "__main__":
 
@@ -22,6 +22,8 @@ if __name__ == "__main__":
     parser.add_argument('--embedding_config', type=str,
                         help='Choose a embedding configuration file', default="../config/tsne_default.json")
 
+    parser.add_argument('--normalize', action='store_true', default=False,
+                        help="add if you want to do normalize the columns of the target prediction dataset")
     parser.add_argument('--pre_embed', action='store_true', default=False,
                         help="add if you want to do the embedding before clustering")
     parser.add_argument('--visualize', action='store_true', default=False,
@@ -45,6 +47,8 @@ if __name__ == "__main__":
     frac = 0.1 if args.test else 1
 
     data, names = load_sample_with_names(frac=frac, random_state=args.random_seed)
+    if args.normalize:
+        data = StandardScaler().fit_transform(data)
 
     with open(args.clustering_config) as f:
         clustering_args = json.load(f)
@@ -54,7 +58,7 @@ if __name__ == "__main__":
     if args.clustering == "som_cluster":
         clustering_args["train_data"] = data
 
-    clusterer = get_clusterer(args.clustering, random_state=args.random_seed, **clustering_args)
+    clusterer = get_clusterer(args.clustering, **clustering_args)
     embedder = get_embedder(args.embedding, random_state=args.random_seed, **embedding_args)
     analyzer = ResultAnalyzer(os.path.join("../results", args.run_name),
                               os.path.join("../results", args.run_name,

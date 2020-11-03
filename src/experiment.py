@@ -31,33 +31,65 @@ class Experiment:
         self.pre_filter = pre_filter
         self.visualize = visualize
         self.run_path = os.path.join("../results", run_name)
+        self.filtered_data, self.filtered_names = filter_twosides(self.data, self.names, get_twosides_meddra(False))
+
+    def get_train_data(self):
+        """
+        :return: The dataset for training the clusterer.
+        """
+        if self.pre_filter:
+            if self.pre_embedd:
+                return self.embedder.embed(self.filtered_data)
+            return self.filtered_data
+        if self.pre_embedd:
+            return self.embedder.embed(self.data)
+        return self.data
+
+    def get_test_data(self):
+        """
+        :return: The dataset for testing and generating results on the clusters.
+        """
+        if self.pre_embedd:
+            return self.embedder.embed(self.filtered_data)
+        return self.filtered_data
+
+    def predict_labels(self):
+        """
+        Fit the clusterer and predict cluster labels
+        :return: predicted cluster labels
+        """
+        self.clusterer.fit(self.get_train_data())
+        return self.clusterer.predict(self.get_test_data())
+
+    def generate_results(self, labels):
+        """
+        Generate experiment results given predicted cluster labels
+        :param labels: cluster labels
+        """
+        results = pd.DataFrame(labels, columns=["cluster"])
+        results = pd.concat([self.filtered_names.reset_index(drop=True), results.reset_index(drop=True)], axis=1)
+        print(results)
+        os.makedirs(self.run_path, exist_ok=True)
+        results.to_csv(os.path.join(self.run_path, "results.csv"), index=False, header=True)
+
+        if self.visualize:
+            self.visualize_embeddings(labels)
+
+    def visualize_embeddings(self, labels):
+        """
+        Visualize the embeddings for a given labels
+        :param labels: cluster labels
+        """
+        if not self.pre_embedd:
+            data = self.embedder.embed(self.get_test_data())
+        else:
+            data = self.get_test_data()
+        plot_embedded_cluster(data, labels, save_fig_path=os.path.join(self.run_path, "embedded_clusters.png"))
 
     def run(self):
         """
         Run the experiment. All the results should be either printed or saved into the subfolder of results
         specified at initialization of the class.
         """
-        data = self.data
-
-        if self.pre_filter:
-            data, names = filter_twosides(self.data, self.names, get_twosides_meddra(False))
-        if self.pre_embedd:
-            data = self.embedder.embed(data)
-
-        self.clusterer.fit(data)
-
-        if not self.pre_filter:
-            data, names = filter_twosides(self.data, self.names, get_twosides_meddra(False))
-
-        labels = self.clusterer.predict(data)
-        
-        results = pd.DataFrame(labels, columns=["cluster"])
-        results = pd.concat([names.reset_index(drop=True), results.reset_index(drop=True)], axis=1)
-        print(results)
-        os.makedirs(self.run_path, exist_ok=True)
-        results.to_csv(os.path.join(self.run_path, "results.csv"), index=False, header=True)
-
-        if self.visualize:
-            if not self.pre_embedd:
-                data = self.embedder.embed(data)
-            plot_embedded_cluster(data, labels, save_fig_path=os.path.join(self.run_path, "embedded_clusters.png"))
+        labels = self.predict_labels()
+        self.generate_results(labels)
