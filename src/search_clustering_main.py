@@ -65,6 +65,6 @@ if __name__ == "__main__":
         data = embedder.embed(data)
 
     search_result = ParamSearch(clusterer, clustering_search_config).search(data)
-    print(search_result["params", "rank_test_score", "mean_test_score"].sort_values("rank_test_score"))
+    print(search_result[["params", "rank_test_score", "mean_test_score"]].sort_values("rank_test_score"))
     if args.save_result_path:
         search_result.to_csv(args.save_result_path)
