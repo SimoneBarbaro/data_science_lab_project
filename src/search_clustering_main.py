@@ -65,5 +65,5 @@ if __name__ == "__main__":
 
     search_result = ParamSearch(clusterer, clustering_search_config, args.metric).search(data)
     print(search_result[["params", "rank_test_score", "mean_test_score"]].sort_values("rank_test_score"))
-    if args.save_result_path:
+    if args.save_result_path is not None:
         search_result.to_csv(args.save_result_path)
