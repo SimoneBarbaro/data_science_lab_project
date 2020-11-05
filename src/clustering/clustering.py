@@ -1,11 +1,12 @@
 import numpy as np
+from sklearn.base import BaseEstimator
 from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
 from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
 
 from dimensionality_reduction.som import Som
 
 
-class Clusterer:
+class Clusterer(BaseEstimator):
     """
     Abstract class to follow the same usage of sklearn clustering classes for our new clustering methods.
     """
@@ -26,6 +27,12 @@ class Clusterer:
         """
         self.fit_impl(data)
         return self
+
+    def get_params(self, deep=True):
+        raise NotImplementedError
+
+    def set_params(self, **params):
+        raise NotImplementedError
 
 
 class SomClusterer(Som, Clusterer):
@@ -56,10 +63,17 @@ class SomClusterer(Som, Clusterer):
 
 class SklearnPredictClusterer(Clusterer):
     """
-    Wrapper for AgglomerativeClustering because for some strange reason they forgot to put a predict method in it!
+    Wrapper for SklearnClusterers with no predict method
     """
+
     def __init__(self, original_clusterer):
         self.clusterer = original_clusterer
+
+    def get_params(self, deep=True):
+        return self.clusterer.get_params(deep)
+
+    def set_params(self, **params):
+        return self.clusterer.set_params(**params)
 
     def fit_impl(self, data):
         self.clusterer.fit(data)

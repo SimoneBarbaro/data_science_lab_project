@@ -47,8 +47,6 @@ if __name__ == "__main__":
     frac = 0.1 if args.test else 1
 
     data, names = load_sample_with_names(frac=frac, random_state=args.random_seed)
-    if args.normalize:
-        data = StandardScaler().fit_transform(data)
 
     with open(args.clustering_config) as f:
         clustering_args = json.load(f)
@@ -68,7 +66,7 @@ if __name__ == "__main__":
     else:
         experiment = Experiment(data, names, clusterer, embedder, pre_embedd=args.pre_embed,
                                 pre_filter=args.pre_filter, visualize=args.visualize,
-                                run_name=args.run_name)
+                                normalize=args.normalize, run_name=args.run_name)
         experiment.run()
         if args.analysis == "yes":
             analyzer.full_analysis()

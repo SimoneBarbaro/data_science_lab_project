@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 from visualize.visualize import plot_embedded_cluster
 from data.read_data import filter_twosides, get_twosides_meddra
@@ -10,8 +11,8 @@ class Experiment:
     Main class to run a clustering experiment. It is generic
     and should be able to run with any clustering and any dimensionality reduction embedding method.
     """
-    def __init__(self, data, names, clusterer, embedder,
-                 pre_embedd=False, visualize=False, pre_filter=False, run_name="test"):
+    def __init__(self, data, names, clusterer, embedder, pre_embedd=False,
+                 visualize=False, pre_filter=False, normalize=False, run_name="test"):
         """
         Create a new experiment.
         :param data: The data to run the experiment.
@@ -21,6 +22,7 @@ class Experiment:
         :param pre_embedd: Whether to embed the data before clustering or after.
         :param visualize: whether to visualize the embeddings.
         :param pre_filter: whether to filter the data based on the twosides dataset before or after clustering and embedding.
+        :param normalize: whether to normalize the columns.
         :param run_name: The name of the run corresponding to the folder in results where results will be stored.
         """
         self.data = data
@@ -30,6 +32,7 @@ class Experiment:
         self.pre_embedd = pre_embedd
         self.pre_filter = pre_filter
         self.visualize = visualize
+        self.normalize = normalize
         self.run_path = os.path.join("../results", run_name)
         self.filtered_data, self.filtered_names = filter_twosides(self.data, self.names, get_twosides_meddra(False))
 
@@ -37,21 +40,25 @@ class Experiment:
         """
         :return: The dataset for training the clusterer.
         """
+        data = self.data
         if self.pre_filter:
-            if self.pre_embedd:
-                return self.embedder.embed(self.filtered_data)
-            return self.filtered_data
+            data = self.filtered_data
         if self.pre_embedd:
-            return self.embedder.embed(self.data)
-        return self.data
+            data = self.embedder.embed(data)
+        if self.normalize:
+            data = StandardScaler().fit_transform(data)
+        return data
 
     def get_test_data(self):
         """
         :return: The dataset for testing and generating results on the clusters.
         """
+        data = self.filtered_data
         if self.pre_embedd:
-            return self.embedder.embed(self.filtered_data)
-        return self.filtered_data
+            data = self.embedder.embed(data)
+        if self.normalize:
+            data = StandardScaler().fit_transform(data)
+        return data
 
     def predict_labels(self):
         """

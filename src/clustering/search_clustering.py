@@ -5,7 +5,6 @@ automatic methods should be incorporated into the fit method of a clusterer inst
 """
 from sklearn.metrics import make_scorer, silhouette_score
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
-from sklearn.preprocessing import StandardScaler
 from sklearn.base import BaseEstimator
 import pandas as pd
 
@@ -38,37 +37,39 @@ def run_kmeans_elbow():
     plt.show()
 
 
-class GenericClusterer(Clusterer, BaseEstimator):
-    def __init__(self, clusterer, **kwargs):
-        self.clusterer = get_clusterer(clusterer, **kwargs)
+def get_unsupervised_scorer(metric):
+    def unsupervised_scorer(estimator, X):
+        cluster_labels = estimator.fit_predict(X)  # TODO check if we have it everywhere
+        return metric(X, cluster_labels)
+    return unsupervised_scorer
 
-    def fit_impl(self, data):
-        self.clusterer.fit_impl(data)
 
-    def predict(self, data):
-        return self.clusterer.predict(data)
-
-    def get_params(self, deep=True):
-        return self.clusterer.get_params(deep)
+def get_scorer_from_metrics(name):
+    if name == "silhouette":
+        return get_unsupervised_scorer(silhouette_score)
+    else:
+        raise NotImplementedError()
 
 
 class ParamSearch:
-    def __init__(self, search_config, metrics=silhouette_score):
+    def __init__(self, clusterer, search_config, metrics="silhouette"):
+        self.clusterer = clusterer
         self.search_config = search_config
-        self.scorer = make_scorer(metrics)
+        self.scorer = get_scorer_from_metrics(metrics)
         self.full_coverage = 1
         for v in search_config.values():
             if isinstance(v, list):
                 self.full_coverage *= len(v)
 
     def search(self, data, min_coverage=30):
+        # Search is not really CV, only one fold is used because the metrics is unsupervised
+        fake_cv = [(slice(None), slice(None))]
         if self.full_coverage < min_coverage:
-            search = GridSearchCV(GenericClusterer, param_grid=self.search_config,
-                                  scoring=self.scorer, cv=[(range(0, X.shape[0]), range(0, X.shape[0]))], refit=False)
-            # Search is not really CV, only one fold is used because the metrics is unsupervised
+            search = GridSearchCV(self.clusterer, param_grid=self.search_config, scoring=self.scorer,
+                                  cv=fake_cv, refit=False)
         else:
-            search = RandomizedSearchCV(GenericClusterer, param_distributions=self.search_config,
+            search = RandomizedSearchCV(self.clusterer, param_distributions=self.search_config,
                                         n_iter=min_coverage, scoring=self.scorer,
-                                        cv=[(range(0, X.shape[0]), range(0, X.shape[0]))], refit=False)
-        search.fit(X)
+                                        cv=fake_cv, refit=False)
+        search.fit(data)
         return pd.DataFrame(search.cv_results_)
