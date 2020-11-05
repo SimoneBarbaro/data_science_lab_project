@@ -3,12 +3,10 @@ This file is for functions that search the best configuration of clustering para
 Only methods that require human supervision should be here,
 automatic methods should be incorporated into the fit method of a clusterer instead.
 """
-from sklearn.metrics import make_scorer, silhouette_score
+from sklearn.metrics import silhouette_score
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
-from sklearn.base import BaseEstimator
 import pandas as pd
 
-from clustering.clustering import Clusterer, get_clusterer
 from data.read_data import load_sample
 
 
@@ -38,6 +36,11 @@ def run_kmeans_elbow():
 
 
 def get_unsupervised_scorer(metric):
+    """
+    Get an unsupervised scorer for clustering compatible with sklearn parameter search methods.
+    :param metric: an unsupervised metric, it must take as input the dataset and the cluster labels
+    :return: a scorer based on this metric
+    """
     def unsupervised_scorer(estimator, X):
         cluster_labels = estimator.fit_predict(X)  # TODO check if we have it everywhere
         return metric(X, cluster_labels)
@@ -45,6 +48,11 @@ def get_unsupervised_scorer(metric):
 
 
 def get_scorer_from_metrics(name):
+    """
+    Return a scorer from a give metrics name.
+    :param name: the metrics name.
+    :return: a scorer
+    """
     if name == "silhouette":
         return get_unsupervised_scorer(silhouette_score)
     else:
@@ -52,16 +60,34 @@ def get_scorer_from_metrics(name):
 
 
 class ParamSearch:
-    def __init__(self, clusterer, search_config, metrics="silhouette"):
+    """
+    Class for parameter search
+    """
+    def __init__(self, clusterer, search_config, metric):
+        """
+        Create a parameter searcher
+        :param clusterer: a clusterer
+        :param search_config: a dictionary with the parameters as keys
+        and as values an array of values representing the options to search from.
+        :param metric: the name of an unsupervised clustering metrics
+        """
         self.clusterer = clusterer
         self.search_config = search_config
-        self.scorer = get_scorer_from_metrics(metrics)
+        self.scorer = get_scorer_from_metrics(metric)
         self.full_coverage = 1
         for v in search_config.values():
             if isinstance(v, list):
                 self.full_coverage *= len(v)
 
     def search(self, data, min_coverage=30):
+        """
+        Start a search on a give dataset
+        :param data: the data matrix
+        :param min_coverage: the minimum number of parameters to test,
+        if the search space is larger, a random search is used with that many iterations, o
+        therwise a grid search is used.
+        :return: A dataframe with the results in the typical sklearn format
+        """
         # Search is not really CV, only one fold is used because the metrics is unsupervised
         fake_cv = [(slice(None), slice(None))]
         if self.full_coverage < min_coverage:

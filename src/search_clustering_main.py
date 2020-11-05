@@ -1,6 +1,5 @@
 import argparse
 import json
-import os
 
 from sklearn.preprocessing import StandardScaler
 import numpy as np
@@ -64,7 +63,7 @@ if __name__ == "__main__":
     if args.pre_embed:
         data = embedder.embed(data)
 
-    search_result = ParamSearch(clusterer, clustering_search_config).search(data)
+    search_result = ParamSearch(clusterer, clustering_search_config, args.metric).search(data)
     print(search_result[["params", "rank_test_score", "mean_test_score"]].sort_values("rank_test_score"))
     if args.save_result_path:
         search_result.to_csv(args.save_result_path)
