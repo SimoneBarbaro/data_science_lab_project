@@ -1,12 +1,11 @@
-from sklearn.preprocessing import StandardScaler
 import argparse
 import json
 
 from clustering.clustering import get_clusterer
 from data.read_data import *
 from dimensionality_reduction.embedding import get_embedder
-from experiment import Experiment
-from result_analysis import ResultAnalyzer
+from experiment.experiment import Experiment
+from experiment.result_analysis import ResultAnalyzer
 
 if __name__ == "__main__":
 
