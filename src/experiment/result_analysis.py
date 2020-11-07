@@ -128,10 +128,3 @@ class ResultAnalyzer:
         m2 = max_swap(m2)
     
         return mat/v1[:, None], mat/v2[None, :]
-
-    def mut_info(self, results2):
-        file1 = open("mut_info.txt")
-        file1.write("The Mutual Information Score Is: %s" % score)
-        score = normalized_mutual_info_score(self.results_file["cluster"], results2["cluster"])
-        file1.close()
-        return score
