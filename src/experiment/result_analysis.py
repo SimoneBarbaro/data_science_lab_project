@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfTransformer
 
 from data.read_data import get_twosides_meddra, match_meddra
+from sklearn.metrics.cluster import normalized_mutual_info_score
 
 def intersect2D(a, b):
     """
@@ -85,7 +86,7 @@ class ResultAnalyzer:
 
         final_dataframe = pd.concat([scores_dataframe, tfidf_dataframe], axis=1)
         final_dataframe.to_csv(os.path.join(self.analysis_dir, "scores_{}.csv".format(meddra_term)), index=True, header=True)
-
+        
     def cluster_intersection(self, results2):
         size = []
         assignments = []
@@ -127,3 +128,10 @@ class ResultAnalyzer:
         m2 = max_swap(m2)
     
         return mat/v1[:, None], mat/v2[None, :]
+
+    def mut_info(self, results2):
+        file1 = open("mut_info.txt")
+        file1.write("The Mutual Information Score Is: %s" % score)
+        score = normalized_mutual_info_score(self.results_file["cluster"], results2["cluster"])
+        file1.close()
+        return score
