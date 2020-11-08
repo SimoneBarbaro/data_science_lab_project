@@ -88,6 +88,9 @@ class ResultAnalyzer:
         final_dataframe.to_csv(os.path.join(self.analysis_dir, "scores_{}.csv".format(meddra_term)), index=True, header=True)
         
     def cluster_intersection(self, results2):
+        """
+        Finds the intersection of two sets how many elements are shared between each cluster"
+        """
         size = []
         assignments = []
         for i in range(len(self.results_file["cluster"].unique())):
@@ -129,7 +132,9 @@ class ResultAnalyzer:
     
         return mat/v1[:, None], mat/v2[None, :]
 
-    def mut_info(self, results2):
-        score = normalized_mutual_info_score(self.results_file["cluster"], results2["cluster"])
-        print("Mutual Information Score is: ", score)
-        return score
+    def mut_info(self, results_file2):
+        """Finds the mutual info between two clustering methods"""
+        a = pd.read_csv(results_file2)
+        b = pd.read_csv(self.results_file)
+        mutual_info = normalized_mutual_info_score(a["cluster"], b["cluster"])
+        return mutual_info
