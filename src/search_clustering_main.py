@@ -27,11 +27,11 @@ if __name__ == "__main__":
     parser.add_argument('--embedding_config', type=str,
                         help='Choose a embedding configuration file', default="../config/tsne_default.json")
 
-    parser.add_argument('--normalize', action='store_true', default=True,
+    parser.add_argument('--normalize', action='store_true', default=False,
                         help="add if you want to do normalize the columns of the target prediction dataset")
     parser.add_argument('--pre_embed', action='store_true', default=False,
                         help="add if you want to do the embedding before clustering")
-    parser.add_argument('--pre_filter', action='store_true', default=True,
+    parser.add_argument('--pre_filter', action='store_true', default=False,
                         help="add to filter results before clustering based on twosides")
 
     parser.add_argument('--random_seed', type=int, default=42, help="global seed for random functions")
