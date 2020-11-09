@@ -1,6 +1,6 @@
 from dimensionality_reduction.som import Som
 from dimensionality_reduction.tsne import TsneEmbedder
-#from dimensionality_reduction.umap import UmapEmbedder
+from dimensionality_reduction.umap import UmapEmbedder
 
 
 def get_embedder(name, **kwargs):

@@ -33,7 +33,7 @@ if __name__ == "__main__":
     parser.add_argument('--run_name', type=str, default="test",
                         help="name of the run, a folder with that name will be created in results to store all the "
                              "relevant results of the run")
-    parser.add_argument('--analysis', type=str, default="yes", choices=["yes", "no", "only"],
+    parser.add_argument('--analysis', type=str, default="yes", choices=["yes", "no", "only", "mutual"],
                         help="Options for running the analysis, yes for doing it after the run, "
                              "only for doing only it, use it if the run is already available")
     parser.add_argument('--random_seed', type=int, default=42, help="global seed for random functions")
@@ -60,8 +60,23 @@ if __name__ == "__main__":
     analyzer = ResultAnalyzer(os.path.join("../results", args.run_name),
                               os.path.join("../results", args.run_name,
                                            "results.csv"))
+    print(analyzer.results_file)
+
     if args.analysis == "only":
         analyzer.full_analysis()
+        #analyzer.mut_info('../results/kmeans_10')
+    elif args.analysis == "mutual":
+        list_subfolders_with_paths = [f.path for f in os.scandir('../results/') if f.is_dir()]
+        print(list_subfolders_with_paths)
+        mat = np.zeros((len(list_subfolders_with_paths), len(list_subfolders_with_paths)))
+        for i in range(len(list_subfolders_with_paths)):
+            analyze1 = ResultAnalyzer(list_subfolders_with_paths[i], os.path.join(list_subfolders_with_paths[i], 'results.csv'))
+            for j in range(len(list_subfolders_with_paths)):
+                mat[i, j] = analyze1.mut_info(os.path.join(list_subfolders_with_paths[j], 'results.csv'))
+        df = pd.DataFrame(mat)
+        df.index = list_subfolders_with_paths
+        df.columns = list_subfolders_with_paths
+        df.to_csv('../results/mutual_analysis.csv')
     else:
         experiment = Experiment(data, names, clusterer, embedder, pre_embedd=args.pre_embed,
                                 pre_filter=args.pre_filter, visualize=args.visualize,
