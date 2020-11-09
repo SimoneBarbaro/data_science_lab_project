@@ -45,6 +45,7 @@ if __name__ == "__main__":
 
     np.random.seed(args.random_seed)
     frac = 0.1 if args.test else 1
+    n_jobs = 4 if args.test else -1
 
     data, names = load_sample_with_names(frac=frac, random_state=args.random_seed)
 
@@ -66,7 +67,7 @@ if __name__ == "__main__":
         data = embedder.embed(data)
 
     search_result = ParamSearch(clusterer, clustering_search_config, args.metric)\
-        .search(data, min_coverage=args.search_coverage)
+        .search(data, min_coverage=args.search_coverage, n_jobs=n_jobs)
     print(search_result[["params", "rank_test_score", "mean_test_score"]].sort_values("rank_test_score"))
     if args.save_result_path is not None:
         search_result.to_csv(args.save_result_path)

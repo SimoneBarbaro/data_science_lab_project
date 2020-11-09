@@ -79,9 +79,10 @@ class ParamSearch:
             if isinstance(v, list):
                 self.full_coverage *= len(v)
 
-    def search(self, data, min_coverage=30):
+    def search(self, data, min_coverage=30, n_jobs=-1):
         """
         Start a search on a give dataset
+        :param n_jobs: number of jobs to speed execution
         :param data: the data matrix
         :param min_coverage: the minimum number of parameters to test,
         if the search space is larger, a random search is used with that many iterations, o
@@ -92,10 +93,10 @@ class ParamSearch:
         fake_cv = [(slice(None), slice(None))]
         if self.full_coverage < min_coverage:
             search = GridSearchCV(self.clusterer, param_grid=self.search_config, scoring=self.scorer,
-                                  cv=fake_cv, refit=False, verbose=1)
+                                  cv=fake_cv, refit=False, verbose=1, n_jobs=n_jobs)
         else:
             search = RandomizedSearchCV(self.clusterer, param_distributions=self.search_config,
                                         n_iter=min_coverage, scoring=self.scorer,
-                                        cv=fake_cv, refit=False, verbose=1)
+                                        cv=fake_cv, refit=False, verbose=1, n_jobs=n_jobs)
         search.fit(data)
         return pd.DataFrame(search.cv_results_)
