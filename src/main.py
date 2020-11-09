@@ -65,7 +65,7 @@ if __name__ == "__main__":
     if args.analysis == "only":
         analyzer.full_analysis()
         #analyzer.mut_info('../results/kmeans_10')
-    if args.analysis == "mutual":
+    elif args.analysis == "mutual":
         list_subfolders_with_paths = [f.path for f in os.scandir('../results/') if f.is_dir()]
         print(list_subfolders_with_paths)
         mat = np.zeros((len(list_subfolders_with_paths), len(list_subfolders_with_paths)))
@@ -77,7 +77,6 @@ if __name__ == "__main__":
         df.index = list_subfolders_with_paths
         df.columns = list_subfolders_with_paths
         df.to_csv('../results/mutual_analysis.csv')
-
     else:
         experiment = Experiment(data, names, clusterer, embedder, pre_embedd=args.pre_embed,
                                 pre_filter=args.pre_filter, visualize=args.visualize,
