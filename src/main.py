@@ -11,7 +11,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--clustering', type=str, choices=["som_cluster", "kmeans", "dpgmm", "gmm", "dbscan", "aggl"],
+    parser.add_argument('--clustering', type=str, choices=["som_cluster", "kmeans", "dpgmm", "gmm",
+                                                           "dbscan", "optics", "mean_shift", "aggl", "aggl_features"],
                         help='Choose a clustering method', default="kmeans")
     parser.add_argument('--clustering_config', type=str,
                         help='Choose a clustering configuration file', default="../config/kmeans_default.json")

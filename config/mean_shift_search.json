@@ -1,0 +1,4 @@
+{
+  "bin_seeding": [true, false],
+  "cluster_all": [true, false]
+}

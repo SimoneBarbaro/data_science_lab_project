@@ -1,0 +1,4 @@
+{
+  "n_components": [3, 5, 10, 15, 20, 25, 30, 40, 50],
+  "covariance_type": ["full", "tied", "diag", "spherical"]
+}

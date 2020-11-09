@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.base import BaseEstimator
-from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
+from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering, MeanShift, FeatureAgglomeration, OPTICS
 from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
 
 from dimensionality_reduction.som import Som
@@ -99,7 +99,13 @@ def get_clusterer(name, **kwargs):
         return BayesianGaussianMixture(**kwargs)
     elif name == "dbscan":
         return SklearnPredictClusterer(DBSCAN(**kwargs))
+    elif name == "optics":
+        return SklearnPredictClusterer(OPTICS(**kwargs))
+    elif name == "mean_shift":
+        return SklearnPredictClusterer(MeanShift(**kwargs))
     elif name == "aggl":
         return SklearnPredictClusterer(AgglomerativeClustering(**kwargs))
+    elif name == "aggl_features":
+        return SklearnPredictClusterer(FeatureAgglomeration(**kwargs))
     else:
         raise NotImplementedError("Clusterer requested not implemented")

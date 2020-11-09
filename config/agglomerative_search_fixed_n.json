@@ -1,0 +1,5 @@
+{
+  "n_clusters": [3, 5, 10, 15, 20, 25, 30, 40, 50],
+  "affinity": ["euclidean", "l1", "l2", "manhattan", "cosine"],
+  "linkage" : ["ward", "complete", "average", "single"]
+}
