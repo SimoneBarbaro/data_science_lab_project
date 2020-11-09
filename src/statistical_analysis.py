@@ -62,6 +62,8 @@ if __name__ == "__main__":
             scatter = scatter_method(tfidfs)
             significant = significant.append(ranked[(ranked.iloc[:,1] == term) & (ranked["tfidf_score"] > location + args.distance*scatter)])
     
+    significant = significant.sort_values("tfidf_score", ascending=False)
+    
     if not args.print_only:
         results_file = os.path.join("../results", args.run_name, "analysis", "significant_{}_{}_{}_{}_{}.csv".format(args.level, args.method, args.location, args.scatter, args.distance))
         significant.to_csv(results_file, index=False)
