@@ -92,10 +92,10 @@ class ParamSearch:
         fake_cv = [(slice(None), slice(None))]
         if self.full_coverage < min_coverage:
             search = GridSearchCV(self.clusterer, param_grid=self.search_config, scoring=self.scorer,
-                                  cv=fake_cv, refit=False)
+                                  cv=fake_cv, refit=False, verbose=1)
         else:
             search = RandomizedSearchCV(self.clusterer, param_distributions=self.search_config,
                                         n_iter=min_coverage, scoring=self.scorer,
-                                        cv=fake_cv, refit=False)
+                                        cv=fake_cv, refit=False, verbose=1)
         search.fit(data)
         return pd.DataFrame(search.cv_results_)

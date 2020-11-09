@@ -22,6 +22,7 @@ if __name__ == "__main__":
                         default="../config/kmeans_search_test.json")
     parser.add_argument('--metric', type=str, choices=["silhouette"],
                         help='Choose a metric for measuring clustering performance', default="silhouette")
+    parser.add_argument('--search_coverage', type=int, default=30, help='how many search configurations to try')
 
     parser.add_argument('--embedding', type=str, choices=["tsne", "umap", "som"],
                         help='Choose an embedding method', default="tsne")
@@ -64,7 +65,8 @@ if __name__ == "__main__":
     if args.pre_embed:
         data = embedder.embed(data)
 
-    search_result = ParamSearch(clusterer, clustering_search_config, args.metric).search(data)
+    search_result = ParamSearch(clusterer, clustering_search_config, args.metric)\
+        .search(data, min_coverage=args.search_coverage)
     print(search_result[["params", "rank_test_score", "mean_test_score"]].sort_values("rank_test_score"))
     if args.save_result_path is not None:
         search_result.to_csv(args.save_result_path)
