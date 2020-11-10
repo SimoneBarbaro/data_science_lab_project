@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     np.random.seed(args.random_seed)
     frac = 0.1 if args.test else 1
-    n_jobs = 4 if args.test else -1
+    n_jobs = None if args.test else -1
 
     data, names = load_sample_with_names(frac=frac, random_state=args.random_seed)
 

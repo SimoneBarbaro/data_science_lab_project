@@ -35,20 +35,42 @@ class Clusterer(BaseEstimator):
         raise NotImplementedError
 
 
-class SomClusterer(Som, Clusterer):
+class SomClusterer(Clusterer):
     """
     Clusterer that works on Som.
     """
+    def __init__(self, size=20, path="../results/som{}.npy"):
+        self.size = size
+        self.path = path
+        self.filepath = self.path
+        self.som = None
+        self.train_data = None
+
+    def get_params(self, deep=True):
+        return {"size": self.size, "path": self.path}
+
+    def set_params(self, **params):
+        self.size = params["size"]
+        self.path = params["path"]
+        if "{}" in self.path:
+            self.filepath = self.path.format(self.size)
+        else:
+            self.filepath = self.path
+
     def fit_impl(self, data):
-        # self.train() SOM is trained on creation
-        pass
+        self.train_data = data
+        self.som = Som(data, self.size, self.filepath)
+
+    def fit_predict(self, data):
+        self.fit_impl(data)
+        self.predict(data)
 
     def predict(self, data):
         self.get_som_clusters(data)
         return self.labels_
 
     def get_som_clusters(self, data, plot=False):
-        clusters = self.net.cluster(data, show=plot, printout=False, savefile=False)
+        clusters = self.som.net.cluster(data, show=plot, printout=False, savefile=False)
         self.labels_ = self.get_cluster_labels(clusters)
         return clusters
 
