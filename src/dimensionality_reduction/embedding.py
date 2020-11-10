@@ -1,6 +1,6 @@
 from dimensionality_reduction.som import Som
 from dimensionality_reduction.tsne import TsneEmbedder
-from dimensionality_reduction.umap import UmapEmbedder
+#from dimensionality_reduction.umap import UmapEmbedder
 
 
 def get_embedder(name, **kwargs):
@@ -13,7 +13,8 @@ def get_embedder(name, **kwargs):
     if name == "tsne":
         return TsneEmbedder(**kwargs)
     elif name == "umap":
-        return UmapEmbedder(**kwargs)
+        pass
+        #return UmapEmbedder(**kwargs)
     elif name == "som":
         return Som(**kwargs)
     else:

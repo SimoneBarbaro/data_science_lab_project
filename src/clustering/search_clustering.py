@@ -42,7 +42,7 @@ def get_unsupervised_scorer(metric):
     :return: a scorer based on this metric
     """
     def unsupervised_scorer(estimator, X):
-        cluster_labels = estimator.fit_predict(X)  # TODO check if we have it everywhere
+        cluster_labels = estimator.fit_predict(X)
         return metric(X, cluster_labels)
     return unsupervised_scorer
 

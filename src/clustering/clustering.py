@@ -66,11 +66,12 @@ class SklearnPredictClusterer(Clusterer):
     Wrapper for SklearnClusterers with no predict method
     """
 
-    def __init__(self, original_clusterer):
-        self.clusterer = original_clusterer
+    def __init__(self, original_clusterer_cl, **kwargs):
+        self.clusterer = original_clusterer_cl(**kwargs)
 
     def get_params(self, deep=True):
-        return self.clusterer.get_params(deep)
+        kwargs = self.clusterer.get_params(deep)
+        return {"original_clusterer_cl":self.clusterer.__class__, **kwargs}
 
     def set_params(self, **params):
         return self.clusterer.set_params(**params)
@@ -98,14 +99,14 @@ def get_clusterer(name, **kwargs):
     elif name == "dpgmm":
         return BayesianGaussianMixture(**kwargs)
     elif name == "dbscan":
-        return SklearnPredictClusterer(DBSCAN(**kwargs))
+        return SklearnPredictClusterer(DBSCAN, **kwargs)
     elif name == "optics":
-        return SklearnPredictClusterer(OPTICS(**kwargs))
+        return SklearnPredictClusterer(OPTICS, **kwargs)
     elif name == "mean_shift":
-        return SklearnPredictClusterer(MeanShift(**kwargs))
+        return SklearnPredictClusterer(MeanShift, **kwargs)
     elif name == "aggl":
-        return SklearnPredictClusterer(AgglomerativeClustering(**kwargs))
+        return SklearnPredictClusterer(AgglomerativeClustering, **kwargs)
     elif name == "aggl_features":
-        return SklearnPredictClusterer(FeatureAgglomeration(**kwargs))
+        return SklearnPredictClusterer(FeatureAgglomeration, **kwargs)
     else:
         raise NotImplementedError("Clusterer requested not implemented")
