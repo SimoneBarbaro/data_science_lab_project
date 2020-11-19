@@ -34,7 +34,10 @@ if __name__ == "__main__":
     
     scores_file = os.path.join("../results", args.run_name, "analysis", "scores_{}_term.csv".format(args.level))
     scores = pd.read_csv(scores_file)
-    ranked = scores.assign(rank = scores.groupby("cluster").rank(method="average", ascending=False)["tfidf_score"])
+    if not "rank" in scores.columns:
+        ranked = scores.assign(rank = scores.groupby("cluster").rank(method="average", ascending=False)["tfidf_score"])
+    else:
+        ranked = scores
     
     term = "{}_term".format(args.level)
     
