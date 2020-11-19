@@ -64,7 +64,7 @@ if __name__ == "__main__":
         significant = significant.sort_values(args.sort_by, ascending=False)
     
     if not args.print_only:
-        results_file = os.path.join("../results", args.run_name, "analysis", "significant_{}_{}_{}_{}_{}.csv".format(args.level, args.method, args.location, args.scatter, args.distance))
+        results_file = os.path.join("../results", args.run_name, "analysis", "significant_{}_{}_{}.csv".format(args.level, args.method, args.alpha))
         significant.to_csv(results_file, index=False)
     
     print(significant.to_markdown(index=False))
