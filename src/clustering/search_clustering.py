@@ -6,6 +6,7 @@ automatic methods should be incorporated into the fit method of a clusterer inst
 from sklearn.metrics import silhouette_score
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 import pandas as pd
+import numpy as np
 
 from data.read_data import load_sample
 
@@ -21,7 +22,7 @@ def run_kmeans_elbow():
     # Elbow plot
     from sklearn.cluster import KMeans
     sum_of_squared_distances = []
-    K = range(1,30)
+    K = range(1, 30)
     for k in K:
         km = KMeans(n_clusters=k)
         km = km.fit(data)
@@ -41,9 +42,14 @@ def get_unsupervised_scorer(metric):
     :param metric: an unsupervised metric, it must take as input the dataset and the cluster labels
     :return: a scorer based on this metric
     """
+
     def unsupervised_scorer(estimator, X):
-        cluster_labels = estimator.fit_predict(X)
-        return metric(X, cluster_labels)
+        try:
+            cluster_labels = estimator.fit_predict(X)
+            return metric(X, cluster_labels)
+        except ValueError:
+            return np.nan
+
     return unsupervised_scorer
 
 
@@ -63,6 +69,7 @@ class ParamSearch:
     """
     Class for parameter search
     """
+
     def __init__(self, clusterer, search_config, metric):
         """
         Create a parameter searcher
