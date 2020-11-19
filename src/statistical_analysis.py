@@ -11,7 +11,7 @@ def np_mad(arr, axis=None):
     return 1.4826 * np.median(np.abs(arr - np.median(arr, axis)), axis)
 
 
-def statistical_analysis(scores, level, method="rank", alpha=0.05, sort_by="rank"):
+def statistical_analysis(scores, method="rank", alpha=0.05, sort_by="rank"):
     ranked = scores.assign(rank=scores.groupby("cluster").rank(method="average", ascending=False)["tfidf_score"])
 
     significant = pd.DataFrame()
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     scores_file = os.path.join("../results", args.run_name, "analysis", "scores_{}_term.csv".format(args.level))
     scores = pd.read_csv(scores_file)
 
-    significant = statistical_analysis(scores, level=args.level, method=args.method,
+    significant = statistical_analysis(scores, method=args.method,
                                        alpha=args.alpha, sort_by=args.sort_by)
 
     if not args.print_only:
