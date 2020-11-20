@@ -4,41 +4,23 @@ import pandas as pd
 from data.read_data import get_twosides_meddra, match_meddra, load_sample_with_names
 
 
-
-
-
-def what(data, names, results_meddra, significant_clusters):
-    term = significant_clusters.columns.drop(['value', 'tfidf_score', 'rank', 'grubbs', "cluster"])[0]
-    for i, row in significant_clusters.drop(['value', 'tfidf_score', 'rank', 'grubbs'], axis=1).iterrows():
-        filter = (results_meddra["cluster"] == row["cluster"]) & (results_meddra[term] == row[term])  # TODO term
-        results_filterd = results_meddra[filter]
-        filtered_names = results_filterd[["name1", "name2"]].drop_duplicates()
-        """
-        interesting_indexes = names[
-                (names["name1"].isin(filtered_names["name1"])) & (names["name2"].isin(filtered_names["name2"]))].index
-        """
-        for i, names_row in filtered_names.iterrows():
-            interesting_indexes = names[
-                (names["name1"] == names_row["name1"]) & (names["name2"] == names_row["name2"])].index
-            interesting_data = data.loc[interesting_indexes]
-            interesting_data.head()
-            print(interesting_data)
-
 class InteractiveAnalyzer:
+    LEVELS = ["soc", "pt", "hlt", "hlgt"]
+
     def __init__(self, results_dir):
         self.results_dir = results_dir
         self.results_file = os.path.join(results_dir, "results.csv")
         self.analysis_dir = os.path.join(results_dir, "analysis")
         self.scores = {}
-        self.significant = {}
-        for level in ["soc", "pt", "hlt", "hlgt"]:
+        self.significant_clusters = {}
+        for level in self.LEVELS:
             path = os.path.join(self.analysis_dir, "scores_{}_term.csv".format(level))
             if os.path.exists(path):
                 self.scores[level] = pd.read_csv(path)
             for file in os.listdir(self.analysis_dir):
                 if file.startswith("significant_{}".format(level)):
                     path = os.path.join(self.analysis_dir, file)
-                    self.significant[level] = pd.read_csv(path)
+                    self.significant_clusters[level] = pd.read_csv(path)
 
         twosides = get_twosides_meddra(pickle=False)
         results = pd.read_csv(self.results_file)
@@ -46,7 +28,7 @@ class InteractiveAnalyzer:
         self.data, self.names = load_sample_with_names()
 
     def get_more_significant_clusters(self, level, num_to_get=5):
-        df = self.significant[level]
+        df = self.significant_clusters[level]
         counts = df["cluster"].value_counts().sort_values(ascending=False)
         count_col = counts.loc[df["cluster"]].reset_index(drop=True)
         count_col.index = df.index
@@ -57,5 +39,21 @@ class InteractiveAnalyzer:
 
         return df
 
-    def prova(self):
-        self.result_analyzer.
+    def get_important_targets(self, cluster, targets_per_cluster=5):
+        results_filterd = self.results_meddra[(self.results_meddra["cluster"] == cluster)]
+        filtered_names = results_filterd[["name1", "name2"]].drop_duplicates()
+
+        tmp = self.names.merge(filtered_names, how='outer', indicator=True)
+        tmp = tmp[tmp["_merge"] == "both"]
+
+        interesting_indexes = tmp.index
+        tmp_data = self.data.loc[interesting_indexes]
+
+        return tmp_data.reindex(tmp_data.mean().sort_values()[::-1].index, axis=1).iloc[:, : targets_per_cluster]
+
+    def get_important_data(self, level, cluster_number=5, targets_per_cluster=5):
+        significant_clusters = self.get_more_significant_clusters(level, num_to_get=cluster_number)
+        important_targets = {}
+        for cluster in significant_clusters["cluster"].drop_duplicates():
+            important_targets[cluster] = self.get_important_targets(cluster, targets_per_cluster)
+        return significant_clusters, important_targets
