@@ -25,6 +25,7 @@ class StatisticalAnalyzer:
     def analyze(self, level):        
         scores_file = os.path.join(self.analysis_dir, "scores_{}_term.csv".format(level))
         scores = pd.read_csv(scores_file)
+        print(scores)
         if not "rank" in scores.columns:
             ranked = scores.assign(rank = scores.groupby("cluster").rank(method="average", ascending=False)["tfidf_score"])
         else:
@@ -42,6 +43,8 @@ class StatisticalAnalyzer:
                 for val in sig_values:
                     grubbs_statistic = (mean - val)/std_dev
                     significant = significant.append(ranked[(ranked.iloc[:,1] == term) & (ranked["rank"] == val)].assign(grubbs = grubbs_statistic))
+
+
         elif self.method == "scores":
             for term in ranked.iloc[:,1].unique():  # scores.iloc[:,1] corresponds to soc_term/pt_term/etc.
                 tfidfs = ranked[ranked.iloc[:,1] == term]["tfidf_score"]  # use tf-idf scores
@@ -51,6 +54,7 @@ class StatisticalAnalyzer:
                 for val in sig_values:
                     grubbs_statistic = (val - mean)/std_dev
                     significant = significant.append(ranked[(ranked.iloc[:,1] == term) & (ranked["tfidf_score"] == val)].assign(grubbs = grubbs_statistic))
+
 
         if self.sort_by == "rank":
             significant = significant.sort_values("rank", ascending=True)

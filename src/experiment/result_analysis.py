@@ -56,7 +56,10 @@ class ResultAnalyzer:
         twosides = get_twosides_meddra(pickle=False)
         results = pd.read_csv(self.results_file)
         results_meddra = match_meddra(results, twosides)
-
+        results_meddra_merging = results_meddra.groupby(['name1', 'name2'], as_index=False).agg({'hlt_term': ', '.join, 'pt_term':', '.join, 'hlgt_term': ', '.join})
+        results_merged = results_meddra_merging.merge(results, how='inner', left_on=['name1', 'name2'], right_on=['name1', 'name2'])
+        filename = results_file + '_merged.csv'
+        results_merged.to_csv(filename)
         for term in ["soc_term", "hlgt_term", "hlt_term", "pt_term"]:
             self.analyze(results_meddra, meddra_term=term)
 

@@ -78,6 +78,7 @@ if __name__ == "__main__":
         df.index = list_subfolders_with_paths
         df.columns = list_subfolders_with_paths
         df.to_csv('../results/mutual_analysis.csv')
+        
     else:
         experiment = Experiment(data, names, clusterer, embedder, pre_embedd=args.pre_embed,
                                 pre_filter=args.pre_filter, visualize=args.visualize,
