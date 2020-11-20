@@ -29,7 +29,7 @@ class StatisticalAnalyzer:
         scores = pd.read_csv(scores_file)
         if not "rank" in scores.columns:
             ranked = scores.assign(
-                rank=scores.groupby("cluster").rank(method="average", ascending=False)["tfidf_score"])
+                rank=scores.groupby("cluster")["tfidf_score"].rank(method="average", ascending=False))
         else:
             ranked = scores
 
