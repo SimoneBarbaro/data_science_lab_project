@@ -73,10 +73,10 @@ class ResultAnalyzer:
             .sort_index(level=0, sort_remaining=False) \
             .groupby("cluster")
 
-        scores_dataframe = scores_series.head(scores_series.size().sum()).to_frame("value")
+        scores_dataframe = scores_series.head(scores_series.size().sum()).to_frame("perc")
 
         tmp_df = scores_dataframe.reset_index() \
-            .pivot(index="cluster", columns=meddra_term, values="value") \
+            .pivot(index="cluster", columns=meddra_term, values="perc") \
             .fillna(0)
         tfidf = TfidfTransformer()
         values = tfidf.fit_transform(tmp_df).toarray()
@@ -90,8 +90,11 @@ class ResultAnalyzer:
         tfidf_dataframe = tfidf_series.to_frame("tfidf_score")
 
         final_dataframe = pd.concat([scores_dataframe, tfidf_dataframe], axis=1)
-        final_dataframe.to_csv(os.path.join(self.analysis_dir, "scores_{}.csv".format(meddra_term)), index=True,
-                               header=True)
+        final_dataframe = final_dataframe\
+            .assign(rank=final_dataframe.groupby("cluster")
+                    .rank(method="average", ascending=False)["tfidf_score"])
+        final_dataframe.to_csv(os.path.join(self.analysis_dir, "scores_{}.csv".format(meddra_term)),
+                               index=True, header=True)
 
     def cluster_intersection(self, results2):
         """
