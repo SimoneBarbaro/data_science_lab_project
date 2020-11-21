@@ -23,10 +23,11 @@ def get_spider_data():
     data = pd.read_csv(os.path.join(dirname, "../../data/spider_twosides_table.csv"))
     return data
 
+
 def get_spider_data_with_names():
     data = pd.read_excel(os.path.join(dirname, "../../data/spider_twosides_table.xlsx"), index_col="alldrugs_TWOSIDES").drop(columns=["mol_id", "scores_here252"])
     return data
-    
+
 
 def create_matrix(data):
     """
