@@ -2,8 +2,8 @@ import os
 import warnings
 import numpy as np
 import pandas as pd
+from functools import reduce
 from outliers import smirnov_grubbs as grubbs  # pip install outlier_utils
-
 
 class StatisticalAnalyzer:
 
@@ -14,7 +14,7 @@ class StatisticalAnalyzer:
         self.alpha = alpha
         self.sort_by = sort_by
         self.save = save
-        self.print_output = print_output
+        self.print_output = print_output  # only in code, not available in CLI; mainly used for full_analysis
         warnings.filterwarnings(
             "ignore")  # ignore Grubb's test "RuntimeWarning: invalid value encountered in double_scalars"
 
@@ -70,3 +70,32 @@ class StatisticalAnalyzer:
             results_file = os.path.join(self.analysis_dir,
                                         "significant_{}_{}_{}.csv".format(level, self.method, self.alpha))
             significant.to_csv(results_file, index=False)
+    
+    def summarize(self):
+        results_drugs = pd.read_csv(os.path.join(self.run_dir, "results.csv"))
+        nclusters = results_drugs["cluster"].nunique()
+        signif = {
+            "soc": pd.read_csv(os.path.join(self.analysis_dir, "significant_soc_{}_{}.csv".format(self.method, self.alpha))),
+            "hlgt": pd.read_csv(os.path.join(self.analysis_dir, "significant_hlgt_{}_{}.csv".format(self.method, self.alpha))),
+            "hlt": pd.read_csv(os.path.join(self.analysis_dir, "significant_hlt_{}_{}.csv".format(self.method, self.alpha))),
+            "pt": pd.read_csv(os.path.join(self.analysis_dir, "significant_pt_{}_{}.csv".format(self.method, self.alpha)))
+        }
+        
+        def get_top_n(signif, level, n):
+            nonlocal nclusters
+            return signif.groupby("cluster")["{}_term".format(level)]\
+                         .nth(n).to_frame()\
+                         .reindex(pd.Index(np.arange(0,nclusters), name="cluster"))\
+                         .rename(columns={"{}_term".format(level):"{}{}".format(level, n+1)})
+        
+        # Top soc-level side effect (NaN if none)
+        soc1 = get_top_n(signif["soc"], "soc", 0)
+        result_dfs = [results_drugs, soc1]
+        # Top side effects for other levels
+        for level in ["hlgt", "hlt", "pt"]:
+            for n in range(0,3):
+                top_n = get_top_n(signif[level], level, n)
+                result_dfs.append(top_n)
+
+        summary = reduce(lambda left, right: pd.merge(left, right, on="cluster"), result_dfs)
+        summary.to_csv(os.path.join(self.analysis_dir, "significant_summary.csv"), index=False)
