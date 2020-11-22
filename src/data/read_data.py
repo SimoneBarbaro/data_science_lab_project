@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 
 dirname = os.path.dirname(__file__)  # Trying to fix the path problems
+ORIGINAL_DATA = "alldrugs_twosides_merged.xlsx"  # old: "spider_twosides_table.xlsx"
+PROCESSED_DATA = "alldrugs_twosides_merged.csv"  # old: "spider_twosides_table.csv"
 
 
 def get_old_spider_data():
@@ -11,7 +13,7 @@ def get_old_spider_data():
     Load the spider dataset as it is.
     :return: A pandas dataframe containing the spider dataset.
     """
-    data = pd.read_csv(os.path.join(dirname, "../../data/spider_twosides_data.csv"), index_col="alldrugs_TWOSIDES").drop(columns=["mol_id"])
+    data = pd.read_csv(os.path.join(dirname, "../../data/{}".format(ORIGINAL_DATA)), index_col="alldrugs_TWOSIDES").drop(columns=["mol_id"])
     return data
 
 
@@ -20,12 +22,12 @@ def get_spider_data():
     Load the spider dataset as it is.
     :return: A pandas dataframe containing the spider dataset.
     """
-    data = pd.read_csv(os.path.join(dirname, "../../data/spider_twosides_table.csv"))
+    data = pd.read_csv(os.path.join(dirname, "../../data/{}".format(PROCESSED_DATA)))
     return data
 
 
 def get_spider_data_with_names():
-    data = pd.read_csv(os.path.join(dirname, "../../data/spider_twosides_data.csv"), index_col="alldrugs_TWOSIDES").drop(columns=["mol_id"])
+    data = pd.read_csv(os.path.join(dirname, "../../data/{}".format(ORIGINAL_DATA)), index_col="alldrugs_TWOSIDES").drop(columns=["mol_id"])
     """
     data = pd.read_excel(os.path.join(dirname, "../../data/spider_twosides_table.xlsx"),
                          index_col="alldrugs_TWOSIDES").drop(columns=["mol_id", "scores_here252"])
@@ -127,7 +129,7 @@ def get_drug_index():
     Create a pandas dataframe with names and IDs of drug pairs corresponding to the matrix from create_matrix.
     :return: A pandas dataframe with ID of the first drug | name of the first drug | ID of the second drug | name of the second drug.
     """
-    names = pd.read_csv(os.path.join(dirname, "../../data/spider_twosides_data.csv")).iloc[:, 0:2]
+    names = pd.read_csv(os.path.join(dirname, "../../data/{}".format(ORIGINAL_DATA))).iloc[:, 0:2]
     X = []
     for i1, d1 in names.iterrows():
         for i2, d2 in names.iterrows():
