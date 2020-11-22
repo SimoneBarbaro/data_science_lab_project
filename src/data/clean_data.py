@@ -1,11 +1,11 @@
 import os
 
-from src.data.read_data import get_old_spider_data, dirname
+from src.data.read_data import get_old_spider_data, dirname, PROCESSED_DATA
 
 
 def clean_spider_data():
     data = get_old_spider_data()
-    data.to_csv(os.path.join(dirname, "../../data/alldrugs_twosides_merged.csv"), index=False, header=True)
+    data.to_csv(os.path.join(dirname, "../../data/{}".format(PROCESSED_DATA)), index=False, header=True)
 
 """
 Deprecated
