@@ -46,7 +46,7 @@ if __name__ == "__main__":
     np.random.seed(args.random_seed)
     frac = 0.1 if args.test else 1
 
-    data, names = load_sample_with_names(frac=frac, random_state=args.random_seed)
+    data, names = load_sample_with_names(frac=frac, random_state=args.random_seed, save=True)
 
     with open(args.clustering_config) as f:
         clustering_args = json.load(f)
