@@ -48,7 +48,7 @@ def create_matrix(data):
             if i1 < i2:
                 I.append({'name1': n1, 'name2': n2})
                 X.append(d1 + d2)
-    return pd.DataFrame(X), pd.DataFrame(I)
+    return pd.DataFrame(X).reset_index(drop=True), pd.DataFrame(I)
 
 
 def load_sample(frac=1, random_state=1, save=False):

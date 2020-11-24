@@ -43,9 +43,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    args["pre_filter"] = True  # TODO hotfix to not forget
-
-
     np.random.seed(args.random_seed)
     frac = 0.1 if args.test else 1
 
@@ -82,7 +79,8 @@ if __name__ == "__main__":
         df.to_csv('../results/mutual_analysis.csv')
     else:
         experiment = Experiment(data, names, clusterer, embedder, pre_embedd=args.pre_embed,
-                                pre_filter=args.pre_filter, visualize=args.visualize,
+                                pre_filter=True,  # args.pre_filter, TODO hotfix to not forget
+                                visualize=args.visualize,
                                 normalize=args.normalize, run_name=args.run_name)
         experiment.run()
         if args.analysis == "yes":
