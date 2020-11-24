@@ -79,9 +79,6 @@ class Experiment:
         os.makedirs(self.run_path, exist_ok=True)
         results.to_csv(os.path.join(self.run_path, "results.csv"), index=False, header=True)
 
-        print(os.path.join(self.run_path, "results.csv"))
-
-
         if self.visualize:
             self.visualize_embeddings(labels)
 

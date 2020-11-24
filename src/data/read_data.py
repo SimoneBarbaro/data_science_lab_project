@@ -42,11 +42,13 @@ def create_matrix(data):
     :return: A new dataframe where each distinct pair of rows is summed together along the columns.
     """
     X = []
-    for i1, d1 in data.iterrows():
-        for i2, d2 in data.iterrows():
+    I = []
+    for i1, (n1, d1) in enumerate(data.iterrows()):
+        for i2, (n2, d2) in enumerate(data.iterrows()):
             if i1 < i2:
+                I.append({'name1': n1, 'name2': n2})
                 X.append(d1 + d2)
-    return pd.DataFrame(X)
+    return pd.DataFrame(X), pd.DataFrame(I)
 
 
 def load_sample(frac=1, random_state=1, save=False):
@@ -54,7 +56,7 @@ def load_sample(frac=1, random_state=1, save=False):
         return np.load(os.path.join(dirname, "../../data/matrix_spider_{}_{}.npy".format(frac, random_state)))
 
     data_sample = get_spider_data_sample(frac=frac, random_state=random_state)
-    data = create_matrix(data_sample).values
+    data = create_matrix(data_sample)[0].values
     if save:
         np.save(os.path.join(dirname, "../../data/matrix_spider_{}_{}.npy".format(frac, random_state)), data)
     return data
@@ -70,6 +72,8 @@ def load_sample_with_names(frac=1, random_state=1, save=False):
         - data_matrix: dataframe matrix of interactions (from create_matrix)
         - matrix_names: two-column dataframe with the names of drug pairs corresponding to the rows of the matrix
     """
+    if frac == 1:
+        return load_full_matrix_with_names()
     if save and os.path.exists(os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac,
                                                                                                     random_state))) and os.path.exists(
             os.path.join(dirname, "../../data/matrix_spider_names_{}_{}.pkl.gz".format(frac, random_state))):
@@ -79,8 +83,8 @@ def load_sample_with_names(frac=1, random_state=1, save=False):
             os.path.join(dirname, "../../data/matrix_spider_names_{}_{}.pkl.gz".format(frac, random_state)))
     else:
         data_sample_name = get_spider_data_with_names().sample(frac=frac, random_state=random_state)
-        data_matrix = create_matrix(data_sample_name)
-        matrix_names = get_drug_names(data_sample_name)
+        data_matrix, matrix_names = create_matrix(data_sample_name)
+        # matrix_names = get_drug_names(data_sample_name)
         if save:
             data_matrix.to_pickle(
                 os.path.join(dirname, "../../data/matrix_spider_{}_{}.pkl.gz".format(frac, random_state)))
@@ -102,19 +106,19 @@ def load_full_matrix_with_names():
         names_full = pd.read_pickle(os.path.join(dirname, "../../data/matrix_spider_names_full.pkl.gz"))
     else:
         data_simple = get_spider_data_with_names()
-        data_full = create_matrix(data_simple)
-        names_full = get_drug_names(data_simple)
+        data_full, names_full = create_matrix(data_simple)
+        # names_full = get_drug_names(data_simple)
         data_full.to_pickle(os.path.join(dirname, "../../data/matrix_spider_full.pkl.gz"))
         names_full.to_pickle(os.path.join(dirname, "../../data/matrix_spider_names_full.pkl.gz"))
     return data_full, names_full
 
-
+"""
 def get_drug_names(data):
-    """
+    ""
     Create a pandas dataframe with names of drug pairs corresponding to create_matrix(data).
     :param data: A pandas dataframe of interactions, indexed with drug names.
     :return: A pandas dataframe of drug name pairs, name1 | name2.
-    """
+    ""
     names = data.index
     X = []
     for i1, n1 in pd.DataFrame(names).iterrows():
@@ -122,6 +126,7 @@ def get_drug_names(data):
             if i1 < i2:
                 X.append({'name1': n1[0], 'name2': n2[0]})
     return pd.DataFrame(X)
+"""
 
 
 def get_drug_index():

@@ -61,7 +61,6 @@ if __name__ == "__main__":
     analyzer = ResultAnalyzer(os.path.join("../results", args.run_name),
                               os.path.join("../results", args.run_name,
                                            "results.csv"))
-    print(analyzer.results_file)
 
     if args.analysis == "only":
         analyzer.full_analysis()
