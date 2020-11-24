@@ -88,3 +88,49 @@ class StatisticalAnalyzer:
 
         summary = reduce(lambda left, right: pd.merge(left, right, on="cluster"), result_dfs)
         summary.to_csv(os.path.join(self.analysis_dir, "significant_summary.csv"), index=False)
+    
+    def full_comparison(self):
+        for level in ["soc", "hlgt", "hlt", "pt"]:
+            self.compare(level)
+    
+    def compare(self, level):
+        def mutual(signif1, signif2, level):
+            """signif1 and signif2 as given by pd.read_csv"""
+
+            signif1_names = list(signif1["{}_term".format(level)])
+            signif2_names = list(signif2["{}_term".format(level)])
+            shared_names = set(signif1_names) & set(signif2_names)
+            shared = len(shared_names)
+            prev_shared = shared
+            # ugly way to also match side effects that appear several times
+            while prev_shared > 0:
+                for side_effect in shared_names:
+                    signif1_names.remove(side_effect)
+                    signif2_names.remove(side_effect)
+                shared_names = set(signif1_names) & set(signif2_names)
+                prev_shared = len(shared_names)
+                shared += prev_shared
+
+            return max(shared/len(signif1), shared/len(signif2))
+
+        subfolders_with_paths = [f.path for f in os.scandir("../results/") if f.is_dir()]
+        n_results = len(subfolders_with_paths)
+        mat = np.empty((n_results, n_results))
+        mat[:] = np.nan
+        for i in range(n_results):
+            file1 = os.path.join(subfolders_with_paths[i], "analysis", "significant_{}_{}_{}.csv".format(level, self.method, self.alpha))
+            if os.path.exists(file1):
+                signif1 = pd.read_csv(file1)
+            else:
+                continue  # skip row
+            for j in range(n_results):
+                file2 = os.path.join(subfolders_with_paths[j], "analysis", "significant_{}_{}_{}.csv".format(level, self.method, self.alpha))
+                if os.path.exists(file2):
+                    signif2 = pd.read_csv(file2)
+                    mat[i,j] = mutual(signif1, signif2, level)
+                else:
+                    continue  # skip column
+        df = pd.DataFrame(mat)
+        df.index = [os.path.relpath(full_path, "../results") for full_path in subfolders_with_paths]
+        df.columns = [os.path.relpath(full_path, "../results") for full_path in subfolders_with_paths]
+        df.to_csv("../results/significant_comparison_{}.csv".format(level))
