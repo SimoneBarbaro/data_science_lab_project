@@ -43,6 +43,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    args["pre_filter"] = True  # TODO hotfix to not forget
+
+
     np.random.seed(args.random_seed)
     frac = 0.1 if args.test else 1
 
