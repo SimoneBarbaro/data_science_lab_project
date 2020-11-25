@@ -8,13 +8,13 @@ If the data and results can be uploaded on Google servers for the duration of us
 ### Preparation
 - Install Anaconda:
 https://docs.anaconda.com/anaconda/install/windows/
-- Download and extract this repository with results and the required data: https://polybox.ethz.ch/index.php/f/2157310951 (protected access)
+- Download and extract this repository with results and the required data: https://polybox.ethz.ch/index.php/f/2157321373 (protected access)
   - <details>
     <summary>Manually update for the latest code and results</summary>
 
     - Download this code repository: https://github.com/SimoneBarbaro/data_science_lab_project/archive/main.zip
       - Extract the `.zip` archive into some folder.
-    - Download the results archive `results_2020_11_25.zip`: https://polybox.ethz.ch/index.php/f/2157288772 (protected access)
+    - Download the results archive `results_2020_11_26.zip`: https://polybox.ethz.ch/index.php/f/2157320838 (protected access)
       - Extract the `results` folder to the root of the previous extraction (next to the `src` and `data` folders)
 
     The following files need to be downloaded once only and can be re-used when updating:
