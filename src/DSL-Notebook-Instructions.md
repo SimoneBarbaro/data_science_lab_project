@@ -8,7 +8,7 @@ If the data and results can be uploaded on Google servers for the duration of us
 ### Preparation
 - Install Anaconda:
 https://docs.anaconda.com/anaconda/install/windows/
-- Download this repository along with the results and required data: \<link to be added\>
+- Download and extract this repository with results and the required data: https://polybox.ethz.ch/index.php/f/2157310951 (protected access)
   - <details>
     <summary>Manually update for the latest code and results</summary>
 
@@ -28,7 +28,7 @@ https://docs.anaconda.com/anaconda/install/windows/
 1. Run Jupyter Notebook:
     - launch the [Anaconda Navigator](https://docs.anaconda.com/anaconda/user-guide/getting-started/) from the Start Menu
     - follow steps 1-2 of https://docs.anaconda.com/anaconda/user-guide/getting-started/#run-python-in-a-jupyter-notebook
-2. In the embedded file browser, navigate to the repository with the files set up in Preparation. Open the notebook called `DSL-Notebook.ipynb` in the `src` folder.
+2. In the embedded file browser, navigate to the repository set up in Preparation. Open the notebook called `DSL-Notebook.ipynb` in the `src` folder.
 3. Follow the instructions in the notebook.
     - You can execute a cell by clicking on the black triangle icon at the top-left of a cell.
   Alternatively, you can press `Shift-Enter` to execute the selected cell (indicated by a blue bar on the left; move the selection with the up and down arrow keys or by clicking on another cell with the mouse).
