@@ -1,9 +1,10 @@
 # Simple Method
-<!-- If the results can be considered public, launch the exploration notebook by clicking on [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/SimoneBarbaro/data_science_lab_project/HEAD?filepath=src%2FDSL-Notebook.ipynb). -->
 If the data and results can be uploaded on Google servers for the duration of using the notebook, launch the exploration notebook by clicking on [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SimoneBarbaro/data_science_lab_project/blob/main/src/DSL-Notebook.ipynb).
+You may download the results (`results_2020_11_26.zip`, [Polybox link](https://polybox.ethz.ch/index.php/f/2157320838)) and the processed SPiDER data (`alldrugs_twosides_merged.csv`, [Polybox link](https://polybox.ethz.ch/index.php/f/2152429962)) beforehand.
 
 ---
 # Local Installation
+:warning: The following instructions are currently not up to date.
 
 ### Preparation
 - Install Anaconda:
