@@ -1,1 +1,6 @@
+numpy
 pandas
+scikit-learn
+SimpSOM
+umap-learn
+outlier_utils
