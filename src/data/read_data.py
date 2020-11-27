@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 
 dirname = os.path.dirname(__file__)  # Trying to fix the path problems
-ORIGINAL_DATA = "alldrugs_twosides_merged.csv"  # old: "spider_twosides_table.xlsx"
-PROCESSED_DATA = "alldrugs_twosides_table.csv"  # old: "spider_twosides_table.csv"
+ORIGINAL_DATA = "alldrugs_twosides_revised_spider.csv"  # old: "alldrugs_twosides_merged.csv", "spider_twosides_table.xlsx"
+PROCESSED_DATA = "alldrugs_twosides_revised_spider.csv"  # old: "alldrugs_twosides_table.csv", "spider_twosides_table.csv"
 
 
 def get_old_spider_data():
