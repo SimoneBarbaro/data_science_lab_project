@@ -34,7 +34,7 @@ class StatisticalAnalyzer:
         else:
             ranked = scores
 
-        significant = pd.DataFrame()
+        significant = pd.DataFrame(columns=ranked.columns)
         method_col = "rank" if self.method == "ranks" else "tfidf_score"
 
         for term in ranked.iloc[:, 1].unique():  # scores.iloc[:,1] corresponds to soc_term/pt_term/etc.
