@@ -116,6 +116,13 @@ def load_full_matrix_with_names(dataset):
         names_full.to_pickle(path)
     return data_full, names_full
 
+def filter_spider_tiger():
+    """
+    :return: SPiDER and TIGER dataframes with only the drugs shared between the two datasets
+    """
+    spider = get_spider_data()
+    tiger = get_tiger_data()
+    return spider[spider.index.isin(tiger.index)], tiger[tiger.index.isin(spider.index)]
 
 def get_twosides_meddra(pickle=True):
     """
