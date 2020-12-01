@@ -11,7 +11,7 @@ def clean_spider_data():
 
 def clean_tiger_data():
     data = get_old_tiger_data()
-    data.to_csv(os.path.join(dirname, "../../data/{}".format(ORIGINAL_TIGER_DATA)), index=True, header=True)
+    data.to_csv(os.path.join(dirname, "../../data/{}".format(ORIGINAL_TIGER_DATA)), index=False, header=True)
     # data.to_csv(os.path.join(dirname, "../../data/{}".format(PROCESSED_TIGER_DATA)), index=False, header=True)
 
 

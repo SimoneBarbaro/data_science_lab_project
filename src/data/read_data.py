@@ -21,8 +21,8 @@ def get_old_tiger_data():
     Load the tiger dataset as it is.
     :return: A pandas dataframe containing the spider dataset.
     """
-    data = pd.read_excel(os.path.join(dirname, "../../data/{}".format("alldrugs_TWOSIDES__MW150-750_TIGER.xlsm")),
-                         index_col="# COMPOUND_ID")
+    data = pd.read_excel(os.path.join(dirname, "../../data", "alldrugs_TWOSIDES__MW150-750_TIGER.xlsm"))\
+        .rename(columns={"# COMPOUND_ID": "alldrugs_TWOSIDES"})
     return data
 
 
@@ -83,7 +83,8 @@ def load_sample_with_names(dataset, frac=1, random_state=1, save=False):
         data_matrix = pd.read_pickle(path)
         matrix_names = pd.read_pickle(path)
     else:
-        data_sample_name = get_spider_data().sample(frac=frac, random_state=random_state)
+        get_data_fn = get_spider_data if dataset == "spider" else get_tiger_data
+        data_sample_name = get_data_fn().sample(frac=frac, random_state=random_state)
         data_matrix, matrix_names = create_matrix(data_sample_name)
         if save:
             data_matrix.to_pickle(path)
@@ -108,7 +109,8 @@ def load_full_matrix_with_names(dataset):
         data_full = pd.read_pickle(path)
         names_full = pd.read_pickle(path)
     else:
-        data_simple = get_spider_data()
+        get_data_fn = get_spider_data if dataset == "spider" else get_tiger_data
+        data_simple = get_data_fn()
         data_full, names_full = create_matrix(data_simple)
         data_full.to_pickle(path)
         names_full.to_pickle(path)
