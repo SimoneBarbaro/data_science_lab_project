@@ -1,4 +1,5 @@
 import argparse
+import numpy as np
 import json
 
 from clustering.clustering import get_clusterer
@@ -11,6 +12,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
+    parser.add_argument('--dataset', type=str, choices=["spider", "tiger"],
+                        help='Choose the dataset to work with', default="spider")
     parser.add_argument('--clustering', type=str, choices=["som_cluster", "kmeans", "dpgmm", "gmm",
                                                            "dbscan", "optics", "mean_shift", "aggl", "aggl_features"],
                         help='Choose a clustering method', default="kmeans")
@@ -46,7 +49,7 @@ if __name__ == "__main__":
     np.random.seed(args.random_seed)
     frac = 0.1 if args.test else 1
 
-    data, names = load_sample_with_names(frac=frac, random_state=args.random_seed, save=True)
+    data, names = load_sample_with_names(dataset=args.dataset, frac=frac, random_state=args.random_seed, save=True)
 
     with open(args.clustering_config) as f:
         clustering_args = json.load(f)

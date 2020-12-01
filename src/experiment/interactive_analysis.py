@@ -1,13 +1,13 @@
 import os
 
 import pandas as pd
-from data.read_data import get_twosides_meddra, match_meddra, load_sample_with_names
+from data.read_data import get_twosides_meddra, match_meddra, load_full_matrix_with_names
 
 
 class InteractiveAnalyzer:
     LEVELS = ["soc", "pt", "hlt", "hlgt"]
 
-    def __init__(self, results_dir):
+    def __init__(self, dataset, results_dir):
         self.results_dir = results_dir
         self.results_file = os.path.join(results_dir, "results.csv")
         self.analysis_dir = os.path.join(results_dir, "analysis")
@@ -25,7 +25,7 @@ class InteractiveAnalyzer:
         twosides = get_twosides_meddra(pickle=False)
         results = pd.read_csv(self.results_file)
         self.results_meddra = match_meddra(results, twosides)
-        self.data, self.names = load_sample_with_names()
+        self.data, self.names = load_full_matrix_with_names(dataset)
 
     def get_more_significant_clusters(self, level, num_to_get=5):
         df = self.significant_clusters[level]
