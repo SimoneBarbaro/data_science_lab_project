@@ -2,10 +2,12 @@ import os
 import pandas as pd
 
 dirname = os.path.dirname(__file__)  # Trying to fix the path problems
+
 ORIGINAL_SPIDER_DATA = "alldrugs_twosides_merged.csv"  # old: "spider_twosides_table.xlsx"
 # PROCESSED_SPIDER_DATA = "alldrugs_twosides_table.csv"  # old: "spider_twosides_table.csv"
 SPIDER_MATRIX_SAMPLE = "matrix_spider_{}_{}.pkl.gz"
 SPIDER_MATRIX_FULL = "matrix_spider_{}_{}.pkl.gz"
+
 
 ORIGINAL_TIGER_DATA = "tiger_twosides_data.csv"
 # PROCESSED_TIGER_DATA = "tiger_twosides_table.csv"
