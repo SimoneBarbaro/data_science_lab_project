@@ -133,4 +133,7 @@ class StatisticalAnalyzer:
         df = pd.DataFrame(mat)
         df.index = [os.path.relpath(full_path, "../results") for full_path in subfolders_with_paths]
         df.columns = [os.path.relpath(full_path, "../results") for full_path in subfolders_with_paths]
+        # Reorder such that upper-left has highest values and lower-right lowest values
+        sorted_columns = df.sum().sort_values(ascending=False).index
+        df = df.loc[sorted_columns][sorted_columns]
         df.to_csv("../results/significant_comparison_{}_{}_{}.csv".format(level, self.method, self.alpha))
