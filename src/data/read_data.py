@@ -3,16 +3,20 @@ import pandas as pd
 
 dirname = os.path.dirname(__file__)  # Trying to fix the path problems
 
+FILTERED_INFIX = "_filtered"
+NAMES_SUFFIX = "_names"
+
 ORIGINAL_SPIDER_DATA = "alldrugs_twosides_revised_spider.csv"  # old: "alldrugs_twosides_merged.csv", "spider_twosides_table.xlsx"
 # PROCESSED_SPIDER_DATA = "alldrugs_twosides_table.csv"  # old: "spider_twosides_table.csv"
-SPIDER_MATRIX_SAMPLE = "matrix_spider_{}_{}.pkl.gz"
-SPIDER_MATRIX_FULL = "matrix_spider_{}_{}.pkl.gz"
-
+FILTERED_SPIDER_DATA = "spider_filtered_with_tiger.csv"
+SPIDER_MATRIX_SAMPLE = "matrix_spider{}_{}_{}{}.pkl.gz"
+SPIDER_MATRIX_FULL = "matrix_spider{}_full{}.pkl.gz"
 
 ORIGINAL_TIGER_DATA = "tiger_twosides_data.csv"
+FILTERED_TIGER_DATA = "tiger_filtered_with_spider.csv"
 # PROCESSED_TIGER_DATA = "tiger_twosides_table.csv"
-TIGER_MATRIX_SAMPLE = "matrix_tiger_{}_{}.pkl.gz"
-TIGER_MATRIX_FULL = "matrix_tiger_{}_{}.pkl.gz"
+TIGER_MATRIX_SAMPLE = "matrix_tiger{}_{}_{}{}.pkl.gz"
+TIGER_MATRIX_FULL = "matrix_tiger{}_full{}.pkl.gz"
 
 
 def get_old_tiger_data():
@@ -26,21 +30,24 @@ def get_old_tiger_data():
     return data
 
 
-def get_spider_data():
-    data = pd.read_csv(os.path.join(dirname, "../../data/{}".format(ORIGINAL_SPIDER_DATA)),
-                       index_col="alldrugs_TWOSIDES").drop(columns=["mol_id"])
-    """
-    data = pd.read_excel(os.path.join(dirname, "../../data/spider_twosides_table.xlsx"),
-                         index_col="alldrugs_TWOSIDES").drop(columns=["mol_id", "scores_here252"])
-    """
+def get_spider_data(filtered=False):
+    if filtered:
+        data = pd.read_csv(os.path.join(dirname, "../../data", FILTERED_SPIDER_DATA),
+                           index_col="alldrugs_TWOSIDES")
+    else:
+        data = pd.read_csv(os.path.join(dirname, "../../data", ORIGINAL_SPIDER_DATA),
+                           index_col="alldrugs_TWOSIDES").drop(columns=["mol_id"])
     return data
 
 
-def get_tiger_data():
-    data = pd.read_csv(os.path.join(dirname, "../../data/{}".format(ORIGINAL_TIGER_DATA)),
-                       index_col="alldrugs_TWOSIDES")
+def get_tiger_data(filtered=False):
+    if filtered:
+        data = pd.read_csv(os.path.join(dirname, "../../data", FILTERED_TIGER_DATA),
+                           index_col="alldrugs_TWOSIDES")
+    else:
+        data = pd.read_csv(os.path.join(dirname, "../../data", ORIGINAL_TIGER_DATA),
+                           index_col="alldrugs_TWOSIDES")
     return data
-
 
 def create_matrix(data):
     """
@@ -58,12 +65,13 @@ def create_matrix(data):
     return pd.DataFrame(X).reset_index(drop=True), pd.DataFrame(I)
 
 
-def load_sample_with_names(dataset, frac=1, random_state=1, save=False):
+def load_sample_with_names(dataset, frac=1, random_state=1, filtered=False, save=False):
     """
     Load a fraction of the data with corresponding drug pair names.
-    :param dataset: string specifying whether to use tiger or spider
+    :param dataset: string specifying whether to use the 'spider' or 'tiger' dataset
     :param frac: fraction of data from the original Excel file
     :param random_state: seed
+    :param filtered: whether to consider only drug pairs shared between SPiDER and TIGER datasets
     :param save: whether to save (and subsequently load) the output dataframes as compressed pickles (specified by frac and random_state) in the data folder
     :return:
         - data_matrix: dataframe matrix of interactions (from create_matrix)
@@ -73,56 +81,58 @@ def load_sample_with_names(dataset, frac=1, random_state=1, save=False):
         return load_full_matrix_with_names(dataset)
 
     if dataset == "spider":
-        path = os.path.join(dirname, "../../data", SPIDER_MATRIX_SAMPLE.format(frac, random_state))
+        path = os.path.join(dirname, "../../data", SPIDER_MATRIX_SAMPLE.format(FILTERED_INFIX if filtered else "",
+                                                                               frac, random_state, ""))
+        names_path = os.path.join(dirname, "../../data", SPIDER_MATRIX_SAMPLE.format(FILTERED_INFIX if filtered else "",
+                                                                                     frac, random_state, NAMES_SUFFIX))
     elif dataset == "tiger":
-        path = os.path.join(dirname, "../../data", TIGER_MATRIX_SAMPLE.format(frac, random_state))
+        path = os.path.join(dirname, "../../data", TIGER_MATRIX_SAMPLE.format(FILTERED_INFIX if filtered else "",
+                                                                              frac, random_state, ""))
+        names_path = os.path.join(dirname, "../../data", TIGER_MATRIX_SAMPLE.format(FILTERED_INFIX if filtered else "",
+                                                                                    frac, random_state, NAMES_SUFFIX))
     else:
         raise AttributeError("dataset {} not found".format(dataset))
 
-    if save and os.path.exists(path) and os.path.exists(path):
+    if save and os.path.exists(path) and os.path.exists(names_path):
         data_matrix = pd.read_pickle(path)
-        matrix_names = pd.read_pickle(path)
+        matrix_names = pd.read_pickle(names_path)
     else:
         get_data_fn = get_spider_data if dataset == "spider" else get_tiger_data
-        data_sample_name = get_data_fn().sample(frac=frac, random_state=random_state)
+        data_sample_name = get_data_fn(filtered).sample(frac=frac, random_state=random_state)
         data_matrix, matrix_names = create_matrix(data_sample_name)
         if save:
             data_matrix.to_pickle(path)
-            matrix_names.to_pickle(path)
+            matrix_names.to_pickle(names_path)
     return data_matrix, matrix_names
 
 
-def load_full_matrix_with_names(dataset):
+def load_full_matrix_with_names(dataset, filtered=False):
     """
     Load the full data matrix with corresponding drug pair names.
+    :param dataset: string specifying whether to use the 'spider' or 'tiger' dataset
+    :param filtered: whether to consider only drug pairs shared between SPiDER and TIGER datasets
     :return:
         - data_full: dataframe matrix of interactions (from create_matrix)
         - names_full: two-column dataframe with the names of drug pairs corresponding to the rows of the matrix
     """
     if dataset == "spider":
-        path = os.path.join(dirname, "../../data", SPIDER_MATRIX_FULL)
+        path = os.path.join(dirname, "../../data", SPIDER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", ""))
+        names_path = os.path.join(dirname, "../../data", SPIDER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", NAMES_SUFFIX))
     elif dataset == "tiger":
-        path = os.path.join(dirname, "../../data", TIGER_MATRIX_FULL)
+        path = os.path.join(dirname, "../../data", TIGER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", ""))
+        names_path = os.path.join(dirname, "../../data", SPIDER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", NAMES_SUFFIX))
     else:
         raise AttributeError("dataset {} not found".format(dataset))
-    if os.path.exists(path) and os.path.exists(path):
+    if os.path.exists(path) and os.path.exists(names_path):
         data_full = pd.read_pickle(path)
-        names_full = pd.read_pickle(path)
+        names_full = pd.read_pickle(names_path)
     else:
         get_data_fn = get_spider_data if dataset == "spider" else get_tiger_data
-        data_simple = get_data_fn()
+        data_simple = get_data_fn(filtered)
         data_full, names_full = create_matrix(data_simple)
         data_full.to_pickle(path)
-        names_full.to_pickle(path)
+        names_full.to_pickle(names_path)
     return data_full, names_full
-
-def filter_spider_tiger():
-    """
-    :return: SPiDER and TIGER dataframes with only the drugs shared between the two datasets
-    """
-    spider = get_spider_data()
-    tiger = get_tiger_data()
-    return spider[spider.index.isin(tiger.index)], tiger[tiger.index.isin(spider.index)]
 
 def get_twosides_meddra(pickle=True):
     """
