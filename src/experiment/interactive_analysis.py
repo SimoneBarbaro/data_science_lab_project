@@ -2,7 +2,7 @@ import json
 import os
 
 import pandas as pd
-from data.read_data import get_twosides_meddra, match_meddra, load_full_matrix_with_names
+from data.read_data import get_twosides_meddra, match_meddra, load_full_matrix_with_names, get_rare_targets
 import numpy as np
 
 
@@ -68,8 +68,8 @@ class InteractiveAnalyzer:
             important_targets[cluster] = self.get_important_targets(cluster, targets_per_cluster)
         return significant_clusters, important_targets
 
-    def get_rare_important_targets(self, level, cluster_number=5, targets_per_cluster=5):
-        targets = pd.read_csv("../results/rare_targets_list.csv", delimiter=',', header=None)
+    def get_rare_important_targets(self, cluster_number=5, targets_per_cluster=5):
+        targets = get_rare_targets()
         hd = np.array(targets.columns)
         rare_clusters = []
         for cluster in range(cluster_number):
