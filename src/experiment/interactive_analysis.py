@@ -1,13 +1,15 @@
+import json
 import os
 
 import pandas as pd
 from data.read_data import get_twosides_meddra, match_meddra, load_full_matrix_with_names
 import numpy as np
 
+
 class InteractiveAnalyzer:
     LEVELS = ["soc", "pt", "hlt", "hlgt"]
 
-    def __init__(self, dataset, results_dir):
+    def __init__(self, results_dir):
         self.results_dir = results_dir
         self.results_file = os.path.join(results_dir, "results.csv")
         self.analysis_dir = os.path.join(results_dir, "analysis")
@@ -25,7 +27,15 @@ class InteractiveAnalyzer:
         twosides = get_twosides_meddra(pickle=False)
         results = pd.read_csv(self.results_file)
         self.results_meddra = match_meddra(results, twosides)
-        self.data, self.names = load_full_matrix_with_names(dataset)
+        try:
+            with open(os.path.join(results_dir, "results_info.json")) as f:
+                results_info = json.load(f)
+                dataset = results_info["dataset"]
+                match_datasets = results_info.get("match_datasets", default=False)
+        except FileNotFoundError:
+            dataset = "spider"
+            match_datasets = False
+        self.data, self.names = load_full_matrix_with_names(dataset, filtered=match_datasets)
 
     def get_more_significant_clusters(self, level, num_to_get=5):
         df = self.significant_clusters[level]
@@ -59,15 +69,12 @@ class InteractiveAnalyzer:
         return significant_clusters, important_targets
 
     def get_rare_important_targets(self, level, cluster_number=5, targets_per_cluster=5):
-    	targets = pd.read_csv("../results/rare_targets_list.csv", delimiter=',', header=None)
-    	hd = np.array(targets.columns)
-    	rare_clusters = []
-    	for cluster in range(cluster_number):
-    		important_targets = self.get_important_targets(cluster_number, targets_per_cluster)
-    		cluster_targets = important_targets.columns
-    		if pd.Series(hd).isin(cluster_targets).any():
-    			rare_clusters.append(cluster)
-    	return rare_clusters
-
-
-
+        targets = pd.read_csv("../results/rare_targets_list.csv", delimiter=',', header=None)
+        hd = np.array(targets.columns)
+        rare_clusters = []
+        for cluster in range(cluster_number):
+            important_targets = self.get_important_targets(cluster_number, targets_per_cluster)
+            cluster_targets = important_targets.columns
+            if pd.Series(hd).isin(cluster_targets).any():
+                rare_clusters.append(cluster)
+        return rare_clusters

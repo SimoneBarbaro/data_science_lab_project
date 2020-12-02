@@ -92,5 +92,13 @@ if __name__ == "__main__":
                                 visualize=args.visualize,
                                 normalize=args.normalize, run_name=args.run_name)
         experiment.run()
+
+        with open(os.path.join(experiment.run_path, "results_info.json")) as f:
+            results_info = json.load(f)
+        results_info["dataset"] = args.dataset
+        results_info["match_datasets"] = args.match_datasets
+        with open(os.path.join(experiment.run_path, "results_info.json"), "w") as f:
+            f.write(json.dumps(results_info))
+
         if args.analysis == "yes":
             analyzer.full_analysis()

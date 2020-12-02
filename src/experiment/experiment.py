@@ -1,5 +1,7 @@
+import json
 import os
 import pandas as pd
+from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
 
 from visualize.visualize import plot_embedded_cluster
@@ -75,9 +77,11 @@ class Experiment:
         """
         results = pd.DataFrame(labels, columns=["cluster"])
         results = pd.concat([self.filtered_names.reset_index(drop=True), results.reset_index(drop=True)], axis=1)
-        print(results)
         os.makedirs(self.run_path, exist_ok=True)
         results.to_csv(os.path.join(self.run_path, "results.csv"), index=False, header=True)
+        score = silhouette_score(self.get_test_data(), results["cluster"])
+        with open(os.path.join(self.run_path, "results_info.json"), "w") as f:
+            f.write(json.dumps({"silhouette_score": score}))
 
         if self.visualize:
             self.visualize_embeddings(labels)

@@ -20,13 +20,14 @@ TIGER_MATRIX_FULL = "matrix_tiger{}_full{}.pkl.gz"
 
 RARE_TARGETS = "rare.targets.csv"
 
+
 def get_old_tiger_data():
     """
     This function is deprecated, don't use it for further processing.
     Load the tiger dataset as it is.
     :return: A pandas dataframe containing the spider dataset.
     """
-    data = pd.read_excel(os.path.join(dirname, "../../data", "alldrugs_TWOSIDES__MW150-750_TIGER.xlsm"))\
+    data = pd.read_excel(os.path.join(dirname, "../../data", "alldrugs_TWOSIDES__MW150-750_TIGER.xlsm")) \
         .rename(columns={"# COMPOUND_ID": "alldrugs_TWOSIDES"})
     return data
 
@@ -49,6 +50,7 @@ def get_tiger_data(filtered=False):
         data = pd.read_csv(os.path.join(dirname, "../../data", ORIGINAL_TIGER_DATA),
                            index_col="alldrugs_TWOSIDES")
     return data
+
 
 def create_matrix(data):
     """
@@ -118,10 +120,12 @@ def load_full_matrix_with_names(dataset, filtered=False):
     """
     if dataset == "spider":
         path = os.path.join(dirname, "../../data", SPIDER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", ""))
-        names_path = os.path.join(dirname, "../../data", SPIDER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", NAMES_SUFFIX))
+        names_path = os.path.join(dirname, "../../data",
+                                  SPIDER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", NAMES_SUFFIX))
     elif dataset == "tiger":
         path = os.path.join(dirname, "../../data", TIGER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", ""))
-        names_path = os.path.join(dirname, "../../data", TIGER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", NAMES_SUFFIX))
+        names_path = os.path.join(dirname, "../../data",
+                                  TIGER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", NAMES_SUFFIX))
     else:
         raise AttributeError("dataset {} not found".format(dataset))
     if os.path.exists(path) and os.path.exists(names_path):
@@ -134,6 +138,7 @@ def load_full_matrix_with_names(dataset, filtered=False):
         data_full.to_pickle(path)
         names_full.to_pickle(names_path)
     return data_full, names_full
+
 
 def get_twosides_meddra(pickle=True):
     """
@@ -192,6 +197,7 @@ def match_meddra(filtered_names, twosides):
         res = res.merge(filtered_names, on=["name1", "name2"])
 
     return res
+
 
 def get_rare_targets():
     path = os.path.join(dirname, "../../data/rare_targets.csv")

@@ -16,6 +16,8 @@ if __name__ == "__main__":
 
     parser.add_argument('--dataset', type=str, choices=["spider", "tiger"],
                         help='Choose the dataset to work with', default="spider")
+    parser.add_argument('--match_datasets', action='store_true', default=False,
+                        help='Filter the data to only include the same drugs as the other dataset')
     parser.add_argument('--clustering', type=str, choices=["som_cluster", "kmeans", "dpgmm", "gmm",
                                                            "dbscan", "optics", "mean_shift", "aggl", "aggl_features"],
                         help='Choose a clustering method', default="kmeans")
@@ -49,7 +51,11 @@ if __name__ == "__main__":
     frac = 0.1 if args.test else 1
     n_jobs = None if args.test else -1
 
-    data, names = load_sample_with_names(dataset=args.dataset, frac=frac, random_state=args.random_seed, save=True)
+    data, names = load_sample_with_names(dataset=args.dataset,
+                                         frac=frac,
+                                         random_state=args.random_seed,
+                                         filtered=args.match_datasets,
+                                         save=True)
 
     with open(args.clustering_search_config) as f:
         clustering_search_config = json.load(f)
