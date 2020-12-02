@@ -18,6 +18,7 @@ FILTERED_TIGER_DATA = "tiger_filtered_with_spider.csv"
 TIGER_MATRIX_SAMPLE = "matrix_tiger{}_{}_{}{}.pkl.gz"
 TIGER_MATRIX_FULL = "matrix_tiger{}_full{}.pkl.gz"
 
+RARE_TARGETS = "rare.targets.csv"
 
 def get_old_tiger_data():
     """
@@ -191,3 +192,7 @@ def match_meddra(filtered_names, twosides):
         res = res.merge(filtered_names, on=["name1", "name2"])
 
     return res
+
+def get_rare_targets():
+    path = os.path.join(dirname, "../../data/rare_targets.csv")
+    return pd.read_csv(path)
