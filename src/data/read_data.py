@@ -120,7 +120,7 @@ def load_full_matrix_with_names(dataset, filtered=False):
         names_path = os.path.join(dirname, "../../data", SPIDER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", NAMES_SUFFIX))
     elif dataset == "tiger":
         path = os.path.join(dirname, "../../data", TIGER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", ""))
-        names_path = os.path.join(dirname, "../../data", SPIDER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", NAMES_SUFFIX))
+        names_path = os.path.join(dirname, "../../data", TIGER_MATRIX_FULL.format(FILTERED_INFIX if filtered else "", NAMES_SUFFIX))
     else:
         raise AttributeError("dataset {} not found".format(dataset))
     if os.path.exists(path) and os.path.exists(names_path):
