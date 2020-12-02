@@ -54,7 +54,7 @@ if __name__ == "__main__":
     data, names = load_sample_with_names(dataset=args.dataset,
                                          frac=frac,
                                          random_state=args.random_seed,
-                                         filtered=match_datasets,
+                                         filtered=args.match_datasets,
                                          save=True)
 
     with open(args.clustering_config) as f:
