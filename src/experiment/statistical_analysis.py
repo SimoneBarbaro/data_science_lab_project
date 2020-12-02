@@ -87,7 +87,7 @@ class StatisticalAnalyzer:
                 result_dfs.append(top_n)
 
         summary = reduce(lambda left, right: pd.merge(left, right, on="cluster"), result_dfs)
-        summary.to_csv(os.path.join(self.analysis_dir, "significant_summary.csv"), index=False)
+        summary.to_csv(os.path.join(self.analysis_dir, "significant_summary_{}_{}.csv".format(self.method, self.alpha)), index=False)
     
     def full_comparison(self):
         for level in ["soc", "hlgt", "hlt", "pt"]:
@@ -111,7 +111,7 @@ class StatisticalAnalyzer:
                 prev_shared = len(shared_names)
                 shared += prev_shared
 
-            return max(shared/len(signif1), shared/len(signif2))
+            return max(shared/len(signif1), shared/len(signif2)) if len(signif1) > 0 and len(signif2) > 0 else 0
 
         subfolders_with_paths = [f.path for f in os.scandir("../results/") if f.is_dir()]
         n_results = len(subfolders_with_paths)
@@ -133,4 +133,4 @@ class StatisticalAnalyzer:
         df = pd.DataFrame(mat)
         df.index = [os.path.relpath(full_path, "../results") for full_path in subfolders_with_paths]
         df.columns = [os.path.relpath(full_path, "../results") for full_path in subfolders_with_paths]
-        df.to_csv("../results/significant_comparison_{}.csv".format(level))
+        df.to_csv("../results/significant_comparison_{}_{}_{}.csv".format(level, self.method, self.alpha))
