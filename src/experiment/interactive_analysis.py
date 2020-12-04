@@ -78,3 +78,32 @@ class InteractiveAnalyzer:
             if pd.Series(hd).isin(cluster_targets).any():
                 rare_clusters.append(cluster)
         return rare_clusters
+
+    def make_more_complete_summary(self, significant_clusters, important_targets):
+        lst1 = []
+        lst2 = []
+        lst3 = []
+        lst4 = []
+        lst5 = []
+        tf = []
+        targets = get_rare_targets()
+        hd = np.array(targets.columns)
+        ind = significant_clusters["cluster"].values
+        for clust in ind:
+            if pd.Series(hd).isin(important_targets[clust].columns).any():
+                tf.append(True)
+            else:
+                tf.append(False)
+            lst1.append(important_targets[clust].columns[0])
+            lst2.append(important_targets[clust].columns[1])
+            lst3.append(important_targets[clust].columns[2])
+            lst4.append(important_targets[clust].columns[3])
+            lst5.append(important_targets[clust].columns[4])
+        significant_clusters["Target_1"] = lst1
+        significant_clusters["Target_2"] = lst2
+        significant_clusters["Target_3"] = lst3
+        significant_clusters["Target_4"] = lst4
+        significant_clusters["Target_5"] = lst5
+        significant_clusters["Rare"] = tf
+        return significant_clusters
+
