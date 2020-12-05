@@ -133,7 +133,31 @@ class StatisticalAnalyzer:
         df = pd.DataFrame(mat)
         df.index = [os.path.relpath(full_path, "../results") for full_path in subfolders_with_paths]
         df.columns = [os.path.relpath(full_path, "../results") for full_path in subfolders_with_paths]
+        
+        # Ordering of rows and columns
+        # Assumption: result folders are named dataset_method with both spider and tiger having the same methods
+        # Split into spider and tiger results
+        spider, tiger = [], []
+        for folder in df.index:
+            (tiger if folder.count("tiger") > 0 else spider).append(folder)
+        # Sum similarities among spider and tiger (intra-dataset)
+        same_dataset_sum = {
+            "spider": df.loc[spider][spider].sum(),
+            "tiger": df.loc[tiger][tiger].sum()
+        }
+
+        # Compare spider and tiger of the same method (inter-dataset)
+        # and weight with intra-dataset similarity
+        weighted_order = []
+        for dataset, method in df.index.map(lambda s: s.split("_")):
+            spider_loc = "spider_{}".format(method)
+            tiger_loc = "tiger_{}".format(method)
+            folder = "{}_{}".format(dataset, method)
+            same_method_similarity = df.loc[spider_loc][tiger_loc]
+            weighted_order.append(0.67 * same_dataset_sum[dataset][folder]/n_results + 0.33 * same_method_similarity)
+
+        sorted_methods = pd.Series(weighted_order, index=df.index).sort_values(ascending=False).index
+
         # Reorder such that upper-left has highest values and lower-right lowest values
-        sorted_columns = df.sum().sort_values(ascending=False).index
-        df = df.loc[sorted_columns][sorted_columns]
+        df = df.loc[sorted_methods][sorted_methods]
         df.to_csv("../results/significant_comparison_{}_{}_{}.csv".format(level, self.method, self.alpha))
