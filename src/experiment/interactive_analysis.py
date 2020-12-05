@@ -31,7 +31,7 @@ class InteractiveAnalyzer:
             with open(os.path.join(results_dir, "results_info.json")) as f:
                 results_info = json.load(f)
                 dataset = results_info["dataset"]
-                match_datasets = results_info.get("match_datasets", default=False)
+                match_datasets = results_info.get("match_datasets", False)
         except FileNotFoundError:
             dataset = "spider"
             match_datasets = False
