@@ -54,7 +54,7 @@ class InteractiveAnalyzer:
 
     def get_important_targets(self, cluster, targets_per_cluster=5):
         cluster = float(cluster)
-        return pd.read_csv(os.path.join(self.analysis_dir, "important_targets_{}.csv".format(cluster)), index_col=0).iloc[:, : targets_per_cluster]
+        return pd.read_pickle(os.path.join(self.analysis_dir, "important_targets_{}.pkl.gz".format(int(cluster)))).iloc[:, : targets_per_cluster]
 
 
         results_filterd = self.results_meddra[(self.results_meddra["cluster"] == cluster)]
@@ -88,7 +88,7 @@ class InteractiveAnalyzer:
 
     def make_more_complete_summary(self, significant_clusters, important_targets):
         num_targets = len(important_targets[significant_clusters["cluster"].values[0]].columns)
-        result_lists = [[] * num_targets]
+        result_lists = [[]] * num_targets
 
         tf = []
         targets = get_rare_targets()
@@ -101,7 +101,7 @@ class InteractiveAnalyzer:
                 tf.append(False)
             for i in range(num_targets):
                 result_lists[i].append(important_targets[clust].iloc[:, i])
-
+        
         for i in range(num_targets):
             significant_clusters["Target_{}".format(i + 1)] = result_lists[i]
         significant_clusters["Rare"] = tf

@@ -57,7 +57,7 @@ for dataset in ["spider", "tiger"]:
                 data, names = load_full_matrix_with_names(dataset, filtered=match_datasets)
                 for cluster in results_meddra["cluster"].drop_duplicates():
                     if not os.path.exists(os.path.join(analysis_dir,
-                                                       "important_targets_{}.csv".format(cluster))):
+                                                       "important_targets_{}.pkl.gz".format(cluster))):
                         results_filterd = results_meddra[(results_meddra["cluster"] == cluster)]
                         filtered_names = results_filterd[["name1", "name2"]].drop_duplicates()
 
@@ -66,7 +66,7 @@ for dataset in ["spider", "tiger"]:
 
                         interesting_indexes = tmp.index
                         tmp_data = data.loc[interesting_indexes]
-                        tmp_data.reindex(tmp_data.median().sort_values()[::-1].index, axis=1).to_csv(
+                        tmp_data.reindex(tmp_data.median().sort_values()[::-1].index, axis=1).to_pickle(
                             os.path.join(analysis_dir,
-                                         "important_targets_{}.csv".format(cluster)), header=True, index=True)
+                                         "important_targets_{}.pkl.gz".format(cluster)))
                 print(folder + " targets done")
