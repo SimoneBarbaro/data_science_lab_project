@@ -24,9 +24,11 @@ class InteractiveAnalyzer:
                     path = os.path.join(self.analysis_dir, file)
                     self.significant_clusters[level] = pd.read_csv(path)
 
+        """
         twosides = get_twosides_meddra(pickle=False)
         results = pd.read_csv(self.results_file)
         self.results_meddra = match_meddra(results, twosides)
+        
         try:
             with open(os.path.join(results_dir, "results_info.json")) as f:
                 results_info = json.load(f)
@@ -36,6 +38,7 @@ class InteractiveAnalyzer:
             dataset = "spider"
             match_datasets = False
         self.data, self.names = load_full_matrix_with_names(dataset, filtered=match_datasets)
+        """
 
     def get_more_significant_clusters(self, level, num_to_get=5):
         df = self.significant_clusters[level]
@@ -50,6 +53,10 @@ class InteractiveAnalyzer:
         return df
 
     def get_important_targets(self, cluster, targets_per_cluster=5):
+        cluster = float(cluster)
+        return pd.read_csv(os.path.join(self.analysis_dir, "important_targets_{}.csv".format(cluster)), index_col=0).iloc[:, : targets_per_cluster]
+
+
         results_filterd = self.results_meddra[(self.results_meddra["cluster"] == cluster)]
         filtered_names = results_filterd[["name1", "name2"]].drop_duplicates()
 
@@ -58,8 +65,8 @@ class InteractiveAnalyzer:
 
         interesting_indexes = tmp.index
         tmp_data = self.data.loc[interesting_indexes]
-
-        return tmp_data.reindex(tmp_data.mean().sort_values()[::-1].index, axis=1).iloc[:, : targets_per_cluster]
+        return tmp_data.reindex(tmp_data.median().sort_values()[::-1].index, axis=1).iloc[:, : targets_per_cluster]
+        #return tmp_data.reindex(tmp_data.mean().sort_values()[::-1].index, axis=1).iloc[:, : targets_per_cluster]
 
     def get_important_data(self, level, cluster_number=5, targets_per_cluster=5):
         significant_clusters = self.get_more_significant_clusters(level, num_to_get=cluster_number)
@@ -80,11 +87,9 @@ class InteractiveAnalyzer:
         return rare_clusters
 
     def make_more_complete_summary(self, significant_clusters, important_targets):
-        lst1 = []
-        lst2 = []
-        lst3 = []
-        lst4 = []
-        lst5 = []
+        num_targets = len(important_targets[significant_clusters["cluster"].values[0]].columns)
+        result_lists = [[] * num_targets]
+
         tf = []
         targets = get_rare_targets()
         hd = np.array(targets.columns)
@@ -94,16 +99,10 @@ class InteractiveAnalyzer:
                 tf.append(True)
             else:
                 tf.append(False)
-            lst1.append(important_targets[clust].columns[0])
-            lst2.append(important_targets[clust].columns[1])
-            lst3.append(important_targets[clust].columns[2])
-            lst4.append(important_targets[clust].columns[3])
-            lst5.append(important_targets[clust].columns[4])
-        significant_clusters["Target_1"] = lst1
-        significant_clusters["Target_2"] = lst2
-        significant_clusters["Target_3"] = lst3
-        significant_clusters["Target_4"] = lst4
-        significant_clusters["Target_5"] = lst5
+            for i in range(num_targets):
+                result_lists[i].append(important_targets[clust].iloc[:, i])
+
+        for i in range(num_targets):
+            significant_clusters["Target_{}".format(i + 1)] = result_lists[i]
         significant_clusters["Rare"] = tf
         return significant_clusters
-
