@@ -18,6 +18,7 @@ class StatisticalAnalyzer:
         self.print_output = print_output  # only in code, not available in CLI; mainly used for full_analysis
         warnings.filterwarnings(
             "ignore")  # ignore Grubb's test "RuntimeWarning: invalid value encountered in double_scalars"
+        self.methods_comparison = pd.DataFrame(columns=["method", "soc", "hlgt", "hlt", "pt"]).set_index("method")
 
     def full_analysis(self):
         if self.save:
@@ -92,6 +93,9 @@ class StatisticalAnalyzer:
     def full_comparison(self):
         for level in ["soc", "hlgt", "hlt", "pt"]:
             self.compare(level)
+        sorted_methods = self.methods_comparison.mean(axis=1).sort_values(ascending=False).index
+        self.methods_comparison.loc[sorted_methods]\
+            .to_csv("../results/significant_comparison_datasetsbymethod_{}_{}.csv".format(self.method, self.alpha))
     
     def compare(self, level):
         def mutual(signif1, signif2, level):
@@ -140,21 +144,23 @@ class StatisticalAnalyzer:
         spider, tiger = [], []
         for folder in df.index:
             (tiger if folder.count("tiger") > 0 else spider).append(folder)
-        # Sum similarities among spider and tiger (intra-dataset)
-        same_dataset_sum = {
-            "spider": df.loc[spider][spider].sum(),
-            "tiger": df.loc[tiger][tiger].sum()
+        # Average similarities among spider and tiger (intra-dataset)
+        same_dataset_mean = {
+            "spider": df.loc[spider][spider].mean(),
+            "tiger": df.loc[tiger][tiger].mean()
         }
 
         # Compare spider and tiger of the same method (inter-dataset)
         # and weight with intra-dataset similarity
         weighted_order = []
+        methods_comparison = []
         for dataset, method in df.index.map(lambda s: s.split("_")):
             spider_loc = "spider_{}".format(method)
             tiger_loc = "tiger_{}".format(method)
             folder = "{}_{}".format(dataset, method)
             same_method_similarity = df.loc[spider_loc][tiger_loc]
-            weighted_order.append(0.67 * same_dataset_sum[dataset][folder]/n_results + 0.33 * same_method_similarity)
+            weighted_order.append(0.67 * same_dataset_mean[dataset][folder] + 0.33 * same_method_similarity)
+            self.methods_comparison.loc[method, level] = same_method_similarity
 
         sorted_methods = pd.Series(weighted_order, index=df.index).sort_values(ascending=False).index
 
