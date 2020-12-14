@@ -6,15 +6,15 @@ dirname = os.path.dirname(__file__)  # Trying to fix the path problems
 FILTERED_INFIX = "_filtered"
 NAMES_SUFFIX = "_names"
 
-ORIGINAL_SPIDER_DATA = "alldrugs_twosides_revised_spider.csv"  # old: "alldrugs_twosides_merged.csv", "spider_twosides_table.xlsx"
-# PROCESSED_SPIDER_DATA = "alldrugs_twosides_table.csv"  # old: "spider_twosides_table.csv"
-FILTERED_SPIDER_DATA = "spider_filtered_with_tiger.csv"
+ORIGINAL_SPIDER_DATA = "SPIDER_predictions_ML_anonymized.csv"
+#PROCESSED_SPIDER_DATA = "alldrugs_twosides_table.csv"
+#FILTERED_SPIDER_DATA = "spider_filtered_with_tiger.csv"
 SPIDER_MATRIX_SAMPLE = "matrix_spider{}_{}_{}{}.pkl.gz"
 SPIDER_MATRIX_FULL = "matrix_spider{}_full{}.pkl.gz"
 
-ORIGINAL_TIGER_DATA = "tiger_twosides_data.csv"
-FILTERED_TIGER_DATA = "tiger_filtered_with_spider.csv"
-# PROCESSED_TIGER_DATA = "tiger_twosides_table.csv"
+ORIGINAL_TIGER_DATA = "TIGER_prediction_GS_anonymized.csv"
+#FILTERED_TIGER_DATA = "tiger_filtered_with_spider.csv"
+#PROCESSED_TIGER_DATA = "tiger_twosides_table.csv"
 TIGER_MATRIX_SAMPLE = "matrix_tiger{}_{}_{}{}.pkl.gz"
 TIGER_MATRIX_FULL = "matrix_tiger{}_full{}.pkl.gz"
 
@@ -38,7 +38,7 @@ def get_spider_data(filtered=False):
                            index_col="alldrugs_TWOSIDES")
     else:
         data = pd.read_csv(os.path.join(dirname, "../../data", ORIGINAL_SPIDER_DATA),
-                           index_col="alldrugs_TWOSIDES").drop(columns=["mol_id"])
+                           index_col="alldrugs_TWOSIDES")
     return data
 
 
