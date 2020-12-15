@@ -1,8 +1,8 @@
-import json
+import resource
 import os
 
 import pandas as pd
-from data.read_data import get_twosides_meddra, match_meddra, load_full_matrix_with_names, get_rare_targets
+from data.read_data import get_rare_targets
 import numpy as np
 
 
@@ -55,18 +55,6 @@ class InteractiveAnalyzer:
     def get_important_targets(self, cluster, targets_per_cluster=5):
         cluster = float(cluster)
         return pd.read_pickle(os.path.join(self.analysis_dir, "important_targets_{}.pkl.gz".format(int(cluster)))).iloc[:, : targets_per_cluster]
-
-
-        results_filterd = self.results_meddra[(self.results_meddra["cluster"] == cluster)]
-        filtered_names = results_filterd[["name1", "name2"]].drop_duplicates()
-
-        tmp = self.names.merge(filtered_names, how='outer', indicator=True)
-        tmp = tmp[tmp["_merge"] == "both"]
-
-        interesting_indexes = tmp.index
-        tmp_data = self.data.loc[interesting_indexes]
-        return tmp_data.reindex(tmp_data.median().sort_values()[::-1].index, axis=1).iloc[:, : targets_per_cluster]
-        #return tmp_data.reindex(tmp_data.mean().sort_values()[::-1].index, axis=1).iloc[:, : targets_per_cluster]
 
     def get_important_data(self, level, cluster_number=5, targets_per_cluster=5):
         significant_clusters = self.get_more_significant_clusters(level, num_to_get=cluster_number)
