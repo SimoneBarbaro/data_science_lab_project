@@ -83,9 +83,9 @@ if __name__ == "__main__":
             for j in range(len(list_subfolders_with_paths)):
                 mat[i, j] = analyze1.mut_info(os.path.join(list_subfolders_with_paths[j], 'results.csv'))
         df = pd.DataFrame(mat)
-        df.index = list_subfolders_with_paths
-        df.columns = list_subfolders_with_paths
-        df.to_csv('../results/mutual_analysis.csv')
+        df.index = [os.path.relpath(full_path, "../results") for full_path in list_subfolders_with_paths]
+        df.columns = [os.path.relpath(full_path, "../results") for full_path in list_subfolders_with_paths]
+        df.to_csv('../results/clustering_mutual_analysis.csv')
     else:
         experiment = Experiment(data, names, clusterer, embedder, pre_embedd=args.pre_embed,
                                 pre_filter=True,  # args.pre_filter, TODO hotfix to not forget
