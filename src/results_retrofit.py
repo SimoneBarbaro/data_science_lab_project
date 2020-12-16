@@ -8,7 +8,7 @@ from data.read_data import load_full_matrix_with_names, get_twosides_meddra, fil
 subfolders_with_paths = [f.path for f in os.scandir("../results/") if f.is_dir()]
 meddra = get_twosides_meddra(False)
 for dataset in ["spider", "tiger"]:
-    for to_filter in [False, True]:
+    for to_filter in [False]:
         data, names = load_full_matrix_with_names(dataset, to_filter)
         data, names = filter_twosides(data, names, meddra)
 
