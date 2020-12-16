@@ -1,6 +1,5 @@
 # Simple Method
-If the paired target predictions and results can be uploaded on Google servers for the duration of using the notebook, launch the exploration notebook by clicking on [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SimoneBarbaro/data_science_lab_project/blob/main/src/DSL-Notebook.ipynb).
-You may download the results ([`results_2020_12_06.zip`](https://polybox.ethz.ch/index.php/f/2172234367)) and the paired SPiDER predictions ([`matrix_spider_filtered_full.pkl.gz`](https://polybox.ethz.ch/index.php/f/2172246742) and [`matrix_spider_filtered_full_names.pkl.gz`](https://polybox.ethz.ch/index.php/f/2172246700)) beforehand.
+If the results from the anonymized predictions can be uploaded to Google servers for the duration of using the notebook, launch the exploration notebook by clicking on [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SimoneBarbaro/data_science_lab_project/blob/main/src/DSL-Notebook.ipynb).
 
 ---
 # Local Installation
