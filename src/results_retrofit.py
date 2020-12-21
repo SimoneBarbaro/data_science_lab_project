@@ -61,10 +61,13 @@ for dataset in ["spider", "tiger"]:
                         results_filterd = results_meddra[(results_meddra["cluster"] == cluster)]
                         filtered_names = results_filterd[["name1", "name2"]].drop_duplicates()
 
-                        tmp = names.merge(filtered_names, how='outer', indicator=True)
+                        #tmp = names.merge(filtered_names, how='outer', indicator=True)
+                        tmp = names.reset_index().merge(filtered_names, on=["name1", "name2"], how='outer',
+                                                        indicator=True)
                         tmp = tmp[tmp["_merge"] == "both"]
 
-                        interesting_indexes = tmp.index
+                        #interesting_indexes = tmp.index
+                        interesting_indexes = tmp["index"]
                         tmp_data = data.loc[interesting_indexes]
                         tmp_data.reindex(tmp_data.median().sort_values()[::-1].index, axis=1).to_pickle(
                             os.path.join(analysis_dir,
