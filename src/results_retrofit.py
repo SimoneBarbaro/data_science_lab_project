@@ -8,7 +8,7 @@ from data.read_data import load_full_matrix_with_names, get_twosides_meddra, fil
 subfolders_with_paths = [f.path for f in os.scandir("../results/") if f.is_dir()]
 meddra = get_twosides_meddra(False)
 for dataset in ["spider", "tiger"]:
-    for to_filter in [False]:
+    for to_filter in [False, True]:
         data, names = load_full_matrix_with_names(dataset, to_filter)
         data, names = filter_twosides(data, names, meddra)
 
@@ -54,19 +54,18 @@ for dataset in ["spider", "tiger"]:
                 except FileNotFoundError:
                     dataset = "spider"
                     match_datasets = False
-                data, names = load_full_matrix_with_names(dataset, filtered=match_datasets)
+                # data, names = load_full_matrix_with_names(dataset, filtered=match_datasets)
+                if match_datasets != to_filter:
+                    continue
                 for cluster in results_meddra["cluster"].drop_duplicates():
                     if not os.path.exists(os.path.join(analysis_dir,
                                                        "important_targets_{}.pkl.gz".format(cluster))):
                         results_filterd = results_meddra[(results_meddra["cluster"] == cluster)]
                         filtered_names = results_filterd[["name1", "name2"]].drop_duplicates()
 
-                        #tmp = names.merge(filtered_names, how='outer', indicator=True)
                         tmp = names.reset_index().merge(filtered_names, on=["name1", "name2"], how='outer',
                                                         indicator=True)
                         tmp = tmp[tmp["_merge"] == "both"]
-
-                        #interesting_indexes = tmp.index
                         interesting_indexes = tmp["index"]
                         tmp_data = data.loc[interesting_indexes]
                         tmp_data.reindex(tmp_data.median().sort_values()[::-1].index, axis=1).to_pickle(
