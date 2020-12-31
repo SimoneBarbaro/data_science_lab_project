@@ -85,6 +85,13 @@ if __name__ == "__main__":
         df = pd.DataFrame(mat)
         df.index = [os.path.relpath(full_path, "../results") for full_path in list_subfolders_with_paths]
         df.columns = [os.path.relpath(full_path, "../results") for full_path in list_subfolders_with_paths]
+        
+	# Ordering of rows and columns
+        sorted_methods = df.mean().sort_values(ascending=False).index
+
+        # Reorder such that upper-left has highest values and lower-right lowest values
+        df = df.loc[sorted_methods][sorted_methods]
+        
         df.to_csv('../results/clustering_mutual_analysis.csv')
     else:
         experiment = Experiment(data, names, clusterer, embedder, pre_embedd=args.pre_embed,
