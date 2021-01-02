@@ -1,24 +1,10 @@
 import os
 import pandas as pd
 
+from data.utils import ORIGINAL_SPIDER_DATA, ORIGINAL_TIGER_DATA, SPIDER_MATRIX_SAMPLE, SPIDER_MATRIX_FULL, \
+    TIGER_MATRIX_SAMPLE, TIGER_MATRIX_FULL, FILTERED_INFIX, NAMES_SUFFIX, FILTERED_SPIDER_DATA, FILTERED_TIGER_DATA
+
 dirname = os.path.dirname(__file__)  # Trying to fix the path problems
-
-FILTERED_INFIX = "_filtered"
-NAMES_SUFFIX = "_names"
-
-ORIGINAL_SPIDER_DATA = "SPIDER_predictions_ML_anonymized.csv"
-#PROCESSED_SPIDER_DATA = "alldrugs_twosides_table.csv"
-#FILTERED_SPIDER_DATA = "spider_filtered_with_tiger.csv"
-SPIDER_MATRIX_SAMPLE = "matrix_spider{}_{}_{}{}.pkl.gz"
-SPIDER_MATRIX_FULL = "matrix_spider{}_full{}.pkl.gz"
-
-ORIGINAL_TIGER_DATA = "TIGER_prediction_GS_anonymized.csv"
-#FILTERED_TIGER_DATA = "tiger_filtered_with_spider.csv"
-#PROCESSED_TIGER_DATA = "tiger_twosides_table.csv"
-TIGER_MATRIX_SAMPLE = "matrix_tiger{}_{}_{}{}.pkl.gz"
-TIGER_MATRIX_FULL = "matrix_tiger{}_full{}.pkl.gz"
-
-RARE_TARGETS = "rare.targets.csv"
 
 
 def get_old_tiger_data():

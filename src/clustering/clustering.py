@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.base import BaseEstimator
-from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering, MeanShift, FeatureAgglomeration, OPTICS
+from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering, MeanShift, OPTICS
 from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
 
 from dimensionality_reduction.som import Som
@@ -128,7 +128,5 @@ def get_clusterer(name, **kwargs):
         return SklearnPredictClusterer(MeanShift, **kwargs)
     elif name == "aggl":
         return SklearnPredictClusterer(AgglomerativeClustering, **kwargs)
-    elif name == "aggl_features":
-        return SklearnPredictClusterer(FeatureAgglomeration, **kwargs)
     else:
         raise NotImplementedError("Clusterer requested not implemented")
