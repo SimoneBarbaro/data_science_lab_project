@@ -23,12 +23,10 @@ if __name__ == "__main__":
     parser.add_argument('--clustering_config', type=str,
                         help='Choose a clustering configuration file', default="../config/kmeans_10.json")
 
-    parser.add_argument('--normalize', action='store_true', default=True,
-                        help="add if you want to do normalize the columns of the target prediction dataset")
+    parser.add_argument('--no_normalize', action='store_true', default=False,
+                        help="add if you don't want to do normalize the columns of the target prediction dataset")
     parser.add_argument('--pre_embed', action='store_true', default=False,
                         help="add if you want to do the embedding before clustering")
-    parser.add_argument('--pre_filter', action='store_true', default=True,
-                        help="add to filter results before clustering based on twosides")
 
     parser.add_argument('--run_name', type=str, default="test",
                         help="name of the run, a folder with that name will be created in results to store all the "
@@ -70,7 +68,7 @@ if __name__ == "__main__":
     experiment = Experiment(data, names, clusterer, embedder, pre_embedd=args.pre_embed,
                             pre_filter=True,
                             visualize=False,
-                            normalize=args.normalize, run_name=args.run_name)
+                            normalize=not args.no_normalize, run_name=args.run_name)
     experiment.run()
 
     with open(os.path.join(experiment.run_path, "results_info.json")) as f:
