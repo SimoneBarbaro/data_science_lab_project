@@ -57,6 +57,7 @@ class InteractiveAnalyzer:
                 rare_clusters.append(cluster)
         return rare_clusters
 
+    """
     def make_more_complete_summary(self, significant_clusters, important_targets):
         # num_targets = len(important_targets[significant_clusters["cluster"].values[0]].columns)
         # result_lists = [[]] * num_targets
@@ -70,13 +71,14 @@ class InteractiveAnalyzer:
                 tf.append(True)
             else:
                 tf.append(False)
-            """
+            
             for i in range(num_targets):
                 result_lists[i].append(important_targets[clust].iloc[:, i])
-            """
-        """
+            
+        
         for i in range(num_targets):
             significant_clusters["Target_{}".format(i + 1)] = result_lists[i]
-        """
+        
         significant_clusters["Rare"] = tf
         return significant_clusters
+    """
