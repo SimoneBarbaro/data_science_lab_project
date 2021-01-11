@@ -1,4 +1,3 @@
-import resource
 import os
 
 import pandas as pd
@@ -23,22 +22,6 @@ class InteractiveAnalyzer:
                 if file.startswith("significant_{}".format(level)):
                     path = os.path.join(self.analysis_dir, file)
                     self.significant_clusters[level] = pd.read_csv(path)
-
-        """
-        twosides = get_twosides_meddra(pickle=False)
-        results = pd.read_csv(self.results_file)
-        self.results_meddra = match_meddra(results, twosides)
-        
-        try:
-            with open(os.path.join(results_dir, "results_info.json")) as f:
-                results_info = json.load(f)
-                dataset = results_info["dataset"]
-                match_datasets = results_info.get("match_datasets", False)
-        except FileNotFoundError:
-            dataset = "spider"
-            match_datasets = False
-        self.data, self.names = load_full_matrix_with_names(dataset, filtered=match_datasets)
-        """
 
     def get_more_significant_clusters(self, level, num_to_get=5):
         df = self.significant_clusters[level]
