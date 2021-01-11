@@ -51,7 +51,7 @@ class InteractiveAnalyzer:
         hd = np.array(targets.columns)
         rare_clusters = []
         for cluster in range(cluster_number):
-            important_targets = self.get_important_targets(cluster_number, targets_per_cluster)
+            important_targets = self.get_important_targets(cluster, targets_per_cluster)
             cluster_targets = important_targets.columns
             if pd.Series(hd).isin(cluster_targets).any():
                 rare_clusters.append(cluster)
