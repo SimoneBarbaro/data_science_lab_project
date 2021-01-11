@@ -48,7 +48,7 @@ class InteractiveAnalyzer:
 
     def get_rare_important_targets(self, cluster_number=5, targets_per_cluster=5):
         targets = get_rare_targets()
-        hd = np.array(targets.columns)
+        hd = targets.values.reshape(-1)
         rare_clusters = []
         for cluster in range(cluster_number):
             important_targets = self.get_important_targets(cluster, targets_per_cluster)
@@ -58,22 +58,25 @@ class InteractiveAnalyzer:
         return rare_clusters
 
     def make_more_complete_summary(self, significant_clusters, important_targets):
-        num_targets = len(important_targets[significant_clusters["cluster"].values[0]].columns)
-        result_lists = [[]] * num_targets
+        # num_targets = len(important_targets[significant_clusters["cluster"].values[0]].columns)
+        # result_lists = [[]] * num_targets
 
         tf = []
         targets = get_rare_targets()
-        hd = np.array(targets.columns)
+        hd = targets.values.reshape(-1)
         ind = significant_clusters["cluster"].values
         for clust in ind:
             if pd.Series(hd).isin(important_targets[clust].columns).any():
                 tf.append(True)
             else:
                 tf.append(False)
+            """
             for i in range(num_targets):
                 result_lists[i].append(important_targets[clust].iloc[:, i])
-        
+            """
+        """
         for i in range(num_targets):
             significant_clusters["Target_{}".format(i + 1)] = result_lists[i]
+        """
         significant_clusters["Rare"] = tf
         return significant_clusters
