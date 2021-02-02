@@ -1,6 +1,6 @@
 numpy
 pandas
+scipy
 scikit-learn
 SimpSOM
 umap-learn
-outlier_utils

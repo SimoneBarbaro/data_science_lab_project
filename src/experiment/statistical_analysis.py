@@ -2,8 +2,8 @@ import os
 import warnings
 import numpy as np
 import pandas as pd
+import scipy.stats
 from functools import reduce
-from outliers import smirnov_grubbs as grubbs  # pip install outlier_utils
 
 
 class StatisticalAnalyzer:
@@ -42,11 +42,16 @@ class StatisticalAnalyzer:
             values = ranked[ranked.iloc[:, 1] == term][method_col]
             mean = np.mean(values)
             std_dev = np.std(values)
-            sig_values = grubbs.min_test_outliers(list(values), alpha=self.alpha)
-            for val in set(sig_values):
+            N = len(values)
+            if N < 3:
+                continue # requires N>=3 for degrees of freedom at least 1
+            tc = scipy.stats.t.ppf(q=self.alpha/N, df=N-2)
+            grubbs_critical = (N-1)/np.sqrt(N) * np.sqrt(tc**2 / (N-2+tc**2))
+            for val in set(values):
                 grubbs_statistic = (mean - val) / std_dev
-                significant = significant.append(
-                    ranked[(ranked.iloc[:, 1] == term) & (ranked[method_col] == val)].assign(grubbs=grubbs_statistic))
+                if grubbs_statistic > grubbs_critical:
+                    significant = significant.append(
+                        ranked[(ranked.iloc[:, 1] == term) & (ranked[method_col] == val)].assign(grubbs=grubbs_statistic))
 
         if self.sort_by == "rank":
             significant = significant.sort_values("rank", ascending=True)
