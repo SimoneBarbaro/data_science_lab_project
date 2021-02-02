@@ -84,7 +84,6 @@ if __name__ == "__main__":
 
     stat_analyzer.full_analysis()
     stat_analyzer.summarize()
-    stat_analyzer.full_comparison()
 
     results_file = os.path.join(experiment.run_path, "results.csv")
     results = pd.read_csv(results_file)
