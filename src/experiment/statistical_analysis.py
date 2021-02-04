@@ -39,12 +39,15 @@ class StatisticalAnalyzer:
         method_col = "rank" if self.method == "ranks" else "tfidf_score"
 
         for term in ranked.iloc[:, 1].unique():  # scores.iloc[:,1] corresponds to soc_term/pt_term/etc.
+            # Grubbs' test
             values = ranked[ranked.iloc[:, 1] == term][method_col]
             mean = np.mean(values)
             std_dev = np.std(values)
             N = len(values)
-            if N < 3:
-                continue # requires N>=3 for degrees of freedom at least 1
+            if N < 3: # requires N>=3 for degrees of freedom at least 1
+                # if only 1 or 2 groups have the side effect, consider it significant but do not compute Grubbs' test statistic
+                significant = significant.append(ranked[(ranked.iloc[:, 1] == term)].assign(grubbs=float("NaN")))
+                continue
             tc = scipy.stats.t.ppf(q=self.alpha/N, df=N-2)
             grubbs_critical = (N-1)/np.sqrt(N) * np.sqrt(tc**2 / (N-2+tc**2))
             for val in set(values):
